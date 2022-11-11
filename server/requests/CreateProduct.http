@@ -1,0 +1,9 @@
+POST http://localhost:4000/product
+Content-Type: application/json
+
+{
+  "name": "Producto 1",
+  "brand": "Nestle",
+  "avaliableQuantity": 20,
+  "price": 2500
+}

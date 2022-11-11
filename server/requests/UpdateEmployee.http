@@ -1,0 +1,6 @@
+PUT http://localhost:4000/employee?employeeId=
+Content-Type: application/json
+
+{
+  "name": "santiago"
+}

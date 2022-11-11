@@ -1,0 +1,9 @@
+POST http://localhost:4000/client
+Content-Type: application/json
+
+{
+  "name": "andres",
+  "surname": "enciso",
+  "nroDocument": "1006692258",
+  "phoneNumber": "+57 3116537527"
+}

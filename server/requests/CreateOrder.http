@@ -1,0 +1,6 @@
+POST http://localhost:4000/order
+Content-Type: application/json
+
+{
+  "clientId": "123"
+}

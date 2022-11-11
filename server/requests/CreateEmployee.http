@@ -1,0 +1,10 @@
+POST http://localhost:4000/employee
+Content-Type: application/json
+
+{
+  "name": "Carlos",
+  "surname": "Martinez",
+  "email": "pedro@gmail.com",
+  "nroDocument": "1002223322",
+  "birthDate": "02/10/2021 00:00 PM"
+}
