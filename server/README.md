@@ -28,9 +28,9 @@ Para el desarrollo de esta API se aplicaron algunos conceptos de DDD (Domain Dri
 ## Pedidos
 - [Crear un pedido][CreateOrder]: `POST /api/order`
 - [Eliminar un pedido][DeleteOrder]: `DELETE /api/order`
-- [Actualizar un pedido][UpdateOrder]: `PUT /api/order`
-- [Obtener un pedido por id][GetOrderById]: `GET /api/order`
 - [Obtener listado de pedidos][GetOrders]: `GET /api/orders`
+- [Agregar un producto a un pedido][AddProductToOrder]: `POST /api/order/product`
+- [Eliminar un producto de un pedido][DeleteProductToOrder]: `DELETE /api/order/product`
 
 [AddProductToOrder]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/AddProductToOrder/README.md
 [CreateClient]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/CreateClient/README.md
@@ -47,6 +47,7 @@ Para el desarrollo de esta API se aplicaron algunos conceptos de DDD (Domain Dri
 [GetEmployeeById]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/GetEmployeeById/README.md
 [GetEmployees]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/GetEmployees/README.md
 [GetOrders]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/GetOrders/README.md
+[GetProductById]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/GetProductById/README.md
 [GetProducts]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/GetProducts/README.md
 [UpdateClient]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/UpdateClient/README.md
 [UpdateEmployee]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/UpdateEmployee/README.md
