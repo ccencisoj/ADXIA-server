@@ -30,7 +30,7 @@ Para el desarrollo de esta API se aplicaron algunos conceptos de DDD (Domain Dri
 - [Eliminar un pedido][DeleteOrder]: `DELETE /api/order`
 - [Obtener listado de pedidos][GetOrders]: `GET /api/orders`
 - [Agregar un producto a un pedido][AddProductToOrder]: `POST /api/order/product`
-- [Eliminar un producto de un pedido][DeleteProductToOrder]: `DELETE /api/order/product`
+- [Eliminar un producto de un pedido][DeleteProductFromOrder]: `DELETE /api/order/product`
 
 [AddProductToOrder]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/AddProductToOrder/README.md
 [CreateClient]: https://github.com/ccencisoj/distrilida4/blob/main/server/requests/CreateClient/README.md
