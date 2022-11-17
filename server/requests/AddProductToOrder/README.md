@@ -1,0 +1,33 @@
+# Agregar producto a pedido
+
+**URL**: `/api/order/addProduct`
+
+**Metodo**: `POST`
+
+**Autenticación requerida**: YES
+
+**Permisos requeridos**: Ninguno
+
+Se debe proporcionar el id del producto y el id de la orden.
+
+## Respuesta exitosa
+
+Para un id de producto 997879c8-fdac-4544-a7de-68755840d979 y un id de pedido 997879c8-fdac-4544-a7de-68755840d979
+
+```http
+POST http://localhost:4000/api/order/addProduct?orderId=997879c8-fdac-4544-a7de-68755840d979&&productId=997879c8-fdac-4544-a7de-68755840d979
+```
+
+## Respuesta mala
+
+Debe ingresar un id valido. La siguiente petición arrojara un error:
+
+```http
+POST http://localhost:4000/api/order/addProduct?orderId=1111&&productId=2222
+```
+
+Debe ingresar el id de la order y del producto. La siguiente petición arrojara un error:
+
+```http
+POST http://localhost:4000/api/order/addProduct?orderId=1111
+```
