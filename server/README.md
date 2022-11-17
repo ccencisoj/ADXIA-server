@@ -1,4 +1,4 @@
-### Documentación de la API
+# Documentación de la API
 
 ## Clientes
 - [Crear un cliente][CreateClient]: `POST /api/client`
