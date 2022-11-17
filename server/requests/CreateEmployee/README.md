@@ -46,7 +46,6 @@ POST http://localhost:4000/api/employee
 Content-Type: application/json
 
 {
-  ...
   "birthDate": "02/10/2021"
 }
 ```

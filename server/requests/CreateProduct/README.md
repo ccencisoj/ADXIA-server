@@ -34,7 +34,6 @@ Content-Type: application/json
 
 {
   "name": "a",
-  ...
 }
 ```
 
@@ -45,7 +44,6 @@ POST http://localhost:4000/api/product
 Content-Type: application/json
 
 {
-  ...
   "avaliableQuantity": -4,
   "price": -2
 }

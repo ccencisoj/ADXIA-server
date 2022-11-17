@@ -72,7 +72,6 @@ POST http://localhost:4000/api/client
 Content-Type: application/json
 
 {
-  ...
   "phoneNumber": "3116537527"
 }
 ```
