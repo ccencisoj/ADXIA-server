@@ -4,7 +4,7 @@
 
 **Metodo**: `POST`
 
-**Autenticación requerida**: YES
+**Autenticación requerida**: Si
 
 **Permisos requeridos**: Ninguno
 

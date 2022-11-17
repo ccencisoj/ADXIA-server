@@ -1,26 +1,28 @@
-# Crear un pedido
+# Actualizar un producto
 
 **URL**: `/api/product`
 
-**Metodo**: `POST`
+**Metodo**: `PUT`
 
 **Autenticación requerida**: Si
 
 **Permisos requeridos**: Ninguno
 
-Se debe proporcionar las siguientes entradas: name, brand, avaliableQuantity y price
+Entradas obligatorias: productId
+
+Entradas opcionales: name, brand, avaliableQuantity y price
 
 ## Respuesta exitosa
 
+Actualizando el nombre y la marca del producto
+
 ```http
-POST http://localhost:4000/api/product
+PUT http://localhost:4000/api/product
 Content-Type: application/json
 
 {
-  "name": "Producto 1",
-  "brand": "Nestle",
-  "avaliableQuantity": 20,
-  "price": 2500
+  "name": "Producto increible",
+  "brand": "Nestle Plus"
 }
 ```
 
@@ -29,7 +31,7 @@ Content-Type: application/json
 Debe ingresar un nombre con longitud mayor a 2 caracteres. La siguiente petición arroja un error:
 
 ```http
-POST http://localhost:4000/api/product
+PUT http://localhost:4000/api/product
 Content-Type: application/json
 
 {
@@ -41,7 +43,7 @@ Content-Type: application/json
 Las entradas avaliableQuantity y price deben ser mayor o igual a 0. La siguiente petición arroja un error:
 
 ```http
-POST http://localhost:4000/api/product
+PUT http://localhost:4000/api/product
 Content-Type: application/json
 
 {

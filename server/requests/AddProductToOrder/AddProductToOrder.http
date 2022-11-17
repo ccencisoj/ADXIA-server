@@ -1,1 +1,1 @@
-POST http://localhost:4000/api/order/addProduct?orderId=""&&productId=""
+POST http://localhost:4000/api/order/product?orderId=""&&productId=""

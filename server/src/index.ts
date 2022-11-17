@@ -39,8 +39,8 @@ const MONGO_URI = config.MONGO_URI;
   server.get("/orders", getOrdersController.execute);
   server.post("/order", createOrderController.execute);
   server.delete("/order", deleteOrderController.execute);
-  server.post("/order/addProduct", addProductToOrderController.execute);
-  server.delete("/order/deleteProduct", deleteProductFromOrderController.execute);
+  server.post("/order/product", addProductToOrderController.execute);
+  server.delete("/order/product", deleteProductFromOrderController.execute);
 
   // Employee Routes
   server.get("/employee", getEmployeeByIdController.execute);
