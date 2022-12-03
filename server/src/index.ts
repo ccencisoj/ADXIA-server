@@ -1,10 +1,9 @@
 // @ts-nocheck
 import cors from 'cors';
-import express from 'express';
 import mongoose from 'mongoose';
+import express, { Router } from 'express';
 import { config } from './infrastructure';
 import {
-  addProductToOrderController,
   createClientController,
   createEmployeeController,
   createOrderController,
@@ -13,7 +12,6 @@ import {
   deleteEmployeeController,
   deleteOrderController,
   deleteProductController,
-  deleteProductFromOrderController,
   getClientByIdController,
   getClientsController,
   getEmployeeByIdController,
@@ -22,7 +20,13 @@ import {
   getProductsController,
   updateClientController,
   updateEmployeeController,
-  updateProductController
+  updateProductController,
+  saveTempImageController,
+  getTempImageByIdController,
+  uploadImageMiddleware,
+  updateOrderController,
+  getOrderProductsController,
+  loginEmployeeController
 } from './container';
 
 const PORT = config.PORT;
@@ -31,36 +35,46 @@ const MONGO_URI = config.MONGO_URI;
 (async ()=> {
   const server = express();
 
+  const apiRouter = Router();
+
   // Middlewares
   server.use(cors());
   server.use(express.json());
 
   // Order Routes
-  server.get("/orders", getOrdersController.execute);
-  server.post("/order", createOrderController.execute);
-  server.delete("/order", deleteOrderController.execute);
-  server.post("/order/product", addProductToOrderController.execute);
-  server.delete("/order/product", deleteProductFromOrderController.execute);
+  apiRouter.get(getOrdersController.route, getOrdersController.execute);
+
+  apiRouter.post(createOrderController.route, createOrderController.execute);
+  apiRouter.delete(deleteOrderController.route, deleteOrderController.execute);
+  apiRouter.put(updateOrderController.route, updateOrderController.execute);
+  apiRouter.get(getOrderProductsController.route, getOrderProductsController.execute);
 
   // Employee Routes
-  server.get("/employee", getEmployeeByIdController.execute);
-  server.get("/employees", getEmployeesController.execute);
-  server.post("/employee", createEmployeeController.execute);
-  server.delete("/employee", deleteEmployeeController.execute);
-  server.put("/employee", updateEmployeeController.execute);
+  apiRouter.get(getEmployeeByIdController.route, getEmployeeByIdController.execute);
+  apiRouter.get(getEmployeeByIdController.route, getEmployeesController.execute);
+  apiRouter.post(createEmployeeController.route, createEmployeeController.execute);
+  apiRouter.delete(deleteEmployeeController.route, deleteEmployeeController.execute);
+  apiRouter.put(updateEmployeeController.route, updateEmployeeController.execute);
+  apiRouter.post(loginEmployeeController.route, loginEmployeeController.execute);
 
   // Client Routes
-  server.get("/client", getClientByIdController.execute);
-  server.get("/clients", getClientsController.execute);
-  server.post("/client", createClientController.execute);
-  server.delete("/client", deleteClientController.execute);
-  server.put("/client", updateClientController.execute);
+  apiRouter.get(getClientByIdController.route, getClientByIdController.execute);
+  apiRouter.get(getClientsController.route, getClientsController.execute);
+  apiRouter.post(createClientController.route, createClientController.execute);
+  apiRouter.delete(deleteClientController.route, deleteClientController.execute);
+  apiRouter.put(updateClientController.route, updateClientController.execute);
 
   // Product Routes
-  server.get("/products", getProductsController.execute);
-  server.post("/product", createProductController.execute);
-  server.delete("/product", deleteProductController.execute);
-  server.put("/product", updateProductController.execute);
+  apiRouter.get(getProductsController.route, getProductsController.execute);
+  apiRouter.post(createProductController.route, createProductController.execute);
+  apiRouter.delete(deleteProductController.route, deleteProductController.execute);
+  apiRouter.put(updateProductController.route, updateProductController.execute);
+
+  // Image routes
+  apiRouter.post(saveTempImageController.route, uploadImageMiddleware.execute, saveTempImageController.execute);
+  apiRouter.get(getTempImageByIdController.route, getTempImageByIdController.execute);
+
+  server.use("/api", apiRouter);
 
   // Database connection
   await mongoose.connect(MONGO_URI);

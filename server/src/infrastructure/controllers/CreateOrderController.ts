@@ -13,6 +13,8 @@ interface CreateOrderControllerDeps {
 }
 
 export class CreateOrderController {
+  public readonly route = "/order";
+
   protected readonly createOrderUseCase: CreateOrderUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
@@ -26,13 +28,16 @@ export class CreateOrderController {
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
     const reqData = {
-      clientId: req.query.clientId
+      employeeId: req.body.employeeId
     } as CreateOrderDTO;
 
     try {
       const order = await this.createOrderUseCase.execute(reqData);
 
-      const orderJSON = OrderMapper.toJSON(order);
+      const orderJSON = {
+        ...OrderMapper.toJSON(order),
+        products: []
+      }
 
       res.json({order: orderJSON});
 

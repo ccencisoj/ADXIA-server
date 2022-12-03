@@ -4,6 +4,7 @@ export { DomainEvent } from './common/DomainEvent';
 export { DomainEvents } from './common/DomainEvents';
 export { Entity } from './common/Entity';
 export { Result } from './common/Result';
+export { UniqueEntityId } from './common/UniqueEntityId';
 
 // Client Events
 export { CreatedClientEvent } from './events/CreatedClientEvent';
@@ -42,3 +43,4 @@ export { PersonName } from './PersonName';
 export { PersonSurname } from './PersonSurname';
 export { PersonPhoneNumber } from './PersonPhoneNumber';
 export { OrderProduct } from './OrderProduct';
+export { Image } from './Image';

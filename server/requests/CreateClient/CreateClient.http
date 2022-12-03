@@ -5,5 +5,8 @@ Content-Type: application/json
   "name": "andres",
   "surname": "enciso",
   "nroDocument": "1006692258",
-  "phoneNumber": "+57 3116537527"
+  "phoneNumber": "+57 3116537527",
+  "address": "cra 6 #16-66",
+  "imageURL": "http://localhost:4000/api/tempImage/ae8b2234-f673-4a4e-b7f0-0a2802c06d65",
+  "business": "Tienda 123"
 }

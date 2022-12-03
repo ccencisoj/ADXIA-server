@@ -27,9 +27,10 @@ export { IOrderProductRepository } from './repositories/IOrderProductRepository'
 export { IOrderRepository } from './repositories/IOrderRepository';
 export { IProductRepository } from './repositories/IProductRepository';
 
-// AddProductToOrderUseCase 
-export { AddProductToOrderDTO } from './useCases/AddProductToOrder/AddProductToOrderDTO';
-export { AddProductToOrderUseCase } from './useCases/AddProductToOrder/AddProductToOrderUseCase';
+// Services
+export { IImageService } from './services/IImageService';
+export { IHashService } from './services/IHashService';
+export { IEmployeeTokenService } from './services/IEmployeeTokenService';
 
 // CreateClientUseCase 
 export { CreateClientDTO } from './useCases/CreateClient/CreateClientDTO';
@@ -42,6 +43,10 @@ export { CreateEmployeeUseCase } from './useCases/CreateEmployee/CreateEmployeeU
 // CreateOrderUseCase
 export { CreateOrderDTO } from './useCases/CreateOrder/CreateOrderDTO';
 export { CreateOrderUseCase } from './useCases/CreateOrder/CreateOrderUseCase';
+
+// UpdateOrderUseCase
+export { UpdateOrderDTO } from './useCases/UpdateOrder/UpdateOrderDTO';
+export { UpdateOrderUseCase } from './useCases/UpdateOrder/UpdateOrderUseCase';
 
 // CreateProductUseCase
 export { CreateProductDTO } from './useCases/CreateProduct/CreateProductDTO';
@@ -62,10 +67,6 @@ export { DeleteOrderUseCase } from './useCases/DeleteOrder/DeleteOrderUseCase';
 // DeleteProductUseCase
 export { DeleteProductDTO } from './useCases/DeleteProduct/DeleteProductDTO';
 export { DeleteProductUseCase } from './useCases/DeleteProduct/DeleteProductUseCase';
-
-// DeleteProductFromOrderUseCase
-export { DeleteProductFromOrderDTO } from './useCases/DeleteProductFromOrder/DeleteProductFromOrderDTO';
-export { DeleteProductFromOrderUseCase } from './useCases/DeleteProductFromOrder/DeleteProductFromOrderUseCase';
 
 // GetClientByIdUseCase
 export { GetClientByIdDTO } from './useCases/GetClientById/GetClientByIdDTO';
@@ -102,3 +103,19 @@ export { UpdateEmployeeUseCase } from './useCases/UpdateEmployee/UpdateEmployeeU
 // UpdateProductUseCase
 export { UpdateProductDTO } from './useCases/UpdateProduct/UpdateProductDTO';
 export { UpdateProductUseCase } from './useCases/UpdateProduct/UpdateProductUseCase';
+
+// SaveTempImageUseCae
+export { SaveTempImageDTO } from './useCases/SaveTempImage/SaveTempImageDTO';
+export { SaveTempImageUseCase } from './useCases/SaveTempImage/SaveTempImageUseCase';
+
+// GetTempImageByIdUseCae
+export { GetTempImageByIdDTO } from './useCases/GetTempImageById/GetTempImageByIdDTO';
+export { GetTempImageByIdUseCase } from './useCases/GetTempImageById/GetTempImageByIdUseCase';
+
+// GetOrderProductsUseCase
+export { GetOrderProductsDTO } from './useCases/GetOrderProducts/GetOrderProductsDTO';
+export { GetOrderProductsUseCase } from './useCases/GetOrderProducts/GetOrderProductsUseCase';
+
+// LoginEmployeeController 
+export { LoginEmployeeDTO } from './useCases/LoginEmployee/LoginEmployeeDTO';
+export { LoginEmployeeUseCase } from './useCases/LoginEmployee/LoginEmployeeUseCase';

@@ -14,6 +14,10 @@ type EmployeeRaw = {
   email: string;
   birthDate: string;
   nroDocument: string;
+  imageURL: string;
+  type: string;
+  accessCode: string;
+  phone: string;
 }
 
 export class EmployeeMapper {
@@ -24,7 +28,10 @@ export class EmployeeMapper {
       surname: employee.surname,
       email: employee.email,
       birthDate: employee.birthDate,
-      nroDocument: employee.nroDocument
+      nroDocument: employee.nroDocument,
+      imageURL: employee.imageURL,
+      type: employee.type,
+      phone: employee.phone
     }
   }
 
@@ -35,7 +42,11 @@ export class EmployeeMapper {
       surname: employee.surname,
       email: employee.email,
       birthDate: employee.birthDate,
-      nroDocument: employee.nroDocument
+      nroDocument: employee.nroDocument,
+      imageURL: employee.imageURL,
+      type: employee.type,
+      accessCode: employee.accessCode,
+      phone: employee.phone
     }
   }
 
@@ -50,7 +61,11 @@ export class EmployeeMapper {
       surname: surnameOrError.getValue(),
       email: emailOrError.getValue(),
       birthDate: birthDateOrError.getValue(),
-      nroDocument: nroDocumentOrError.getValue()
+      nroDocument: nroDocumentOrError.getValue(),
+      imageURL: raw.imageURL,
+      type: raw.type,
+      accessCode: raw.accessCode,
+      phone: raw.phone
     }, raw.id);
     const employee = employeeOrError.getValue();
     return employee;

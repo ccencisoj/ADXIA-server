@@ -12,6 +12,8 @@ interface UpdateClientControllerDeps {
 }
 
 export class UpdateClientController {
+  public readonly route = "/client";
+
   protected readonly updateClientUseCase: UpdateClientUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
@@ -29,7 +31,10 @@ export class UpdateClientController {
       name: req.body.name,
       surname: req.body.surname,
       nroDocument: req.body.nroDocument,
-      phoneNumber: req.body.phoneNumber
+      phoneNumber: req.body.phoneNumber,
+      address: req.body.address,
+      imageURL: req.body.imageURL,
+      business: req.body.business
     } as UpdateClientDTO;
 
     try {

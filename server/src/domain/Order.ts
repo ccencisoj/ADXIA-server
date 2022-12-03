@@ -4,8 +4,10 @@ import { AggregateRoot } from "./common/AggregateRoot";
 import { CreatedOrderEvent } from "./events/CreatedOrderEvent";
 
 interface OrderProps {
-  clientId: string,
+  clientId?: string,
+  employeeId: string;
   createdAt: DateTime;
+  deliveredAt?: DateTime;
 }
 
 export class Order extends AggregateRoot<OrderProps> {
@@ -17,8 +19,16 @@ export class Order extends AggregateRoot<OrderProps> {
     return this.props.clientId;
   }
 
+  public get employeeId(): string {
+    return this.props.employeeId;
+  }
+
   public get createdAt(): DateTime {
     return this.props.createdAt;
+  }
+
+  public get deliveredAt(): DateTime {
+    return this.props.deliveredAt;
   }
 
   private constructor(props: OrderProps, id?: string) {

@@ -1,0 +1,7 @@
+PUT http://localhost:4000/api/order?orderId=489c5c26-4220-4456-8a0c-b0076e33875c
+Content-Type: application/json
+
+{
+  "clientId": "5d7b08a6-1fbc-4899-b770-206e83b466ff",
+  "products": ["5d7b08a6-1fbc-4899-b770-206e83b466bb"]
+}

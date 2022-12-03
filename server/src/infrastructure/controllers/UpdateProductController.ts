@@ -12,6 +12,8 @@ interface UpdateProductControllerDeps {
 }
 
 export class UpdateProductController {
+  public readonly route = "/product";
+
   protected readonly updateProductUseCase: UpdateProductUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
@@ -29,7 +31,8 @@ export class UpdateProductController {
       name: req.body.name,
       brand: req.body.brand,
       avaliableQuantity: req.body.avaliableQuantity,
-      price: req.body.price
+      price: req.body.price,
+      imageURL: req.body.imageURL
     } as UpdateProductDTO;
 
     try {

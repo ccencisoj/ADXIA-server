@@ -3,7 +3,6 @@ import { CreateOrderDTO } from "./CreateOrderDTO";
 import { OrderException } from "../../exceptions/OrderException";
 import { IOrderRepository } from "../../repositories/IOrderRepository";
 import { IClientRepository } from "../../repositories/IClientRepository";
-import { ClientNoFoundException } from "../../exceptions/ClientNoFoundException";
 
 type Response = Promise<Order>;
 
@@ -22,16 +21,9 @@ export class CreateOrderUseCase {
   }
   
   public execute = async (req: CreateOrderDTO): Response => {
-    const client = await this.clientRepository.findOne({id: req.clientId});
-    const clientFound = !!client;
-
-    if(!clientFound) {
-      throw new ClientNoFoundException();
-    }
-
     const createdAtOrError = DateTime.create(DateTime.current());
     const orderOrError = Order.create({
-      clientId: client.id,
+      employeeId: req.employeeId,
       createdAt: createdAtOrError.getValue()
     });
 

@@ -12,6 +12,8 @@ interface DeleteProductControllerDeps {
 }
 
 export class DeleteProductController {
+  public readonly route = "/product";
+
   protected readonly deleteProductUseCase: DeleteProductUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 

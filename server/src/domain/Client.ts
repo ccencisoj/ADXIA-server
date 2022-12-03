@@ -11,6 +11,9 @@ interface ClientProps {
   surname: PersonSurname;
   nroDocument: PersonDocument;
   phoneNumber: PersonPhoneNumber;
+  address: string;
+  imageURL: string;
+  business: string;
 }
 
 export class Client extends AggregateRoot<ClientProps> {
@@ -32,6 +35,18 @@ export class Client extends AggregateRoot<ClientProps> {
 
   public get phoneNumber(): string {
     return this.props.phoneNumber.value;
+  }
+
+  public get address(): string {
+    return this.props.address;
+  }
+  
+  public get imageURL(): string {
+    return this.props.imageURL;
+  }
+
+  public get business(): string {
+    return this.props.business;
   }
 
   private constructor(props: ClientProps, id?: string) {

@@ -11,6 +11,7 @@ interface ProductProps {
   brand: ProductBrand;
   avaliableQuantity: ProductQuantity;
   price: ProductPrice;
+  imageURL: string;
 }
 
 export class Product extends AggregateRoot<ProductProps> {
@@ -32,6 +33,10 @@ export class Product extends AggregateRoot<ProductProps> {
 
   public get price(): number {
     return this.props.price.value;
+  }
+  
+  public get imageURL(): string {
+    return this.props.imageURL;
   }
 
   private constructor(props: ProductProps, id?: string) {

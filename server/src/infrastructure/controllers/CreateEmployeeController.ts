@@ -13,6 +13,8 @@ interface CreateEmployeeControllerDeps {
 }
 
 export class CreateEmployeeController {
+  public readonly route = "/employee";
+
   protected readonly createEmployeeUseCase: CreateEmployeeUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
@@ -30,7 +32,10 @@ export class CreateEmployeeController {
       surname: req.body.surname,
       email: req.body.email,
       nroDocument: req.body.nroDocument,
-      birthDate: req.body.birthDate
+      birthDate: req.body.birthDate,
+      type: req.body.type,
+      imageURL: req.body.imageURL,
+      accessCode: req.body.accessCode
     } as CreateEmployeeDTO;
 
     try {

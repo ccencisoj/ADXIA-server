@@ -5,6 +5,10 @@ Content-Type: application/json
   "name": "Carlos",
   "surname": "Martinez",
   "email": "pedro@gmail.com",
-  "nroDocument": "1002223322",
-  "birthDate": "02/10/2021 00:00 PM"
+  "nroDocument": "1002223334",
+  "birthDate": "02/10/2021 00:00 PM",
+  "imageURL": "http://localhost:4000/api/tempImage/ae8b2234-f673-4a4e-b7f0-0a2802c06d65",
+  "accessCode": "123456",
+  "type": "vendor",
+  "phone": "3116537527"
 }

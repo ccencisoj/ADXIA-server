@@ -13,6 +13,10 @@ interface EmployeeProps {
   email: PersonEmail;
   nroDocument: PersonDocument;
   birthDate: DateTime;
+  imageURL: string;
+  type: string;
+  accessCode: string;
+  phone: string;
 }
 
 export class Employee extends AggregateRoot<EmployeeProps> {
@@ -38,6 +42,22 @@ export class Employee extends AggregateRoot<EmployeeProps> {
 
   public get birthDate(): string {
     return this.props.birthDate.value;
+  }
+
+  public get imageURL(): string {
+    return this.props.imageURL;
+  }
+
+  public get type(): string {
+    return this.props.type;
+  }
+
+  public get accessCode(): string {
+    return this.props.accessCode;
+  }
+
+  public get phone(): string {
+    return this.props.phone;
   }
 
   private constructor(props: EmployeeProps, id?: string) {

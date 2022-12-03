@@ -4,4 +4,6 @@ export interface UpdateProductDTO {
   brand: string;
   avaliableQuantity: number;
   price: number;
+  imageURL: string;
+  employeeToken: string;
 }

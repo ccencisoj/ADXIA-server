@@ -54,7 +54,8 @@ export class UpdateProductUseCase {
       name: nameOrError.getValue(),
       brand: brandOrError.getValue(),
       avaliableQuantity: avaliableQuantityOrError.getValue(),
-      price: priceOrError.getValue()
+      price: priceOrError.getValue(),
+      imageURL: req.imageURL
     }, product.id);
 
     if(updatedProductOrError.isFailure) {

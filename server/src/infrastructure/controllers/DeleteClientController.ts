@@ -12,6 +12,8 @@ interface DeleteClientControllerDeps {
 }
 
 export class DeleteClientController {
+  public readonly route = "/client";
+
   protected readonly deleteClientUseCase: DeleteClientUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 

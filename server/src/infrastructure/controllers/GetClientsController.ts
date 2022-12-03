@@ -13,6 +13,8 @@ interface GetClientsControllerDeps {
 }
 
 export class GetClientsController {
+  public readonly route = "/clients";
+
   protected readonly getClientsUseCase: GetClientsUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 

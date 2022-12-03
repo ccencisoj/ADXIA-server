@@ -12,6 +12,8 @@ interface DeleteEmployeeControllerDeps {
 }
 
 export class DeleteEmployeeController {
+  public readonly route = "/employee";
+
   protected readonly deleteEmployeeUseCase: DeleteEmployeeUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 

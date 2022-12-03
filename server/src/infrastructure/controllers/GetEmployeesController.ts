@@ -13,6 +13,8 @@ interface GetEmployeesControllerDeps {
 }
 
 export class GetEmployeesController {
+  public readonly route = "/employees";
+
   protected readonly getEmployeesUseCase: GetEmployeesUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 

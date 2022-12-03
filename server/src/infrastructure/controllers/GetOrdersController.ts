@@ -13,6 +13,8 @@ interface GetOrdersControllerDeps {
 }
 
 export class GetOrdersController {
+  public readonly route = "/orders";
+
   protected readonly getOrdersUseCase: GetOrdersUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 

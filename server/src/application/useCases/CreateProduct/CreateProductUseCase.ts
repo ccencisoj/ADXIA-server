@@ -30,7 +30,7 @@ export class CreateProductUseCase {
     const product = await this.productRepository.findOne({name: req.name});
     const productFound = !!product;
 
-    if(!productFound) {
+    if(productFound) {
       throw new ProductNameAlreadyInUseException(product);
     }
 
@@ -53,7 +53,8 @@ export class CreateProductUseCase {
       name: nameOrError.getValue(),
       brand: brandOrError.getValue(),
       avaliableQuantity: avaliableQuantityOrError.getValue(),
-      price: priceOrError.getValue()
+      price: priceOrError.getValue(),
+      imageURL: req.imageURL
     });
 
     if(newProductOrError.isFailure) {

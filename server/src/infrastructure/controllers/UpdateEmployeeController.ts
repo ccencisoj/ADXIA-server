@@ -12,6 +12,8 @@ interface UpdateEmployeeControllerDeps {
 }
 
 export class UpdateEmployeeController {
+  public readonly route = "/employee";
+
   protected readonly updateEmployeeUseCase: UpdateEmployeeUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
@@ -30,7 +32,10 @@ export class UpdateEmployeeController {
       surname: req.body.surname,
       email: req.body.email,
       nroDocument: req.body.nroDocument,
-      birthDate: req.body.birthDate
+      birthDate: req.body.birthDate,
+      imageURL: req.body.imageURL,
+      type: req.body.type,
+      accessCode: req.body.accessCode
     } as UpdateEmployeeDTO;
 
     try {

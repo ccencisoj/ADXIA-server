@@ -1,0 +1,22 @@
+- Client
+address
+imageURL
+business
+
+- Product
+imageURL
+
+- Employee
+imageURL
+type
+accessCode
+
+- Order
+deliveryAt
+employeeId
+
+- OrderProduct
+orderId
+...
+
+

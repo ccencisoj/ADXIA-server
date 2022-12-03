@@ -6,7 +6,11 @@ const EmployeeSchema = new Schema({
   surname: {type: String, required: true},
   email: {type: String, required: true},
   nroDocument: {type: String, required: true},
-  birthDate: {type: String, required: true}
+  birthDate: {type: String, required: true},
+  imageURL: {type: String, required: true},
+  type: {type: String, required: true},
+  phone: {type: String, required: true},
+  accessCode: {type: String, required: true}
 });
 
 const EmployeeModel = model("Employee", EmployeeSchema);

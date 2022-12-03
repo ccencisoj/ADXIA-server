@@ -5,4 +5,9 @@ export interface UpdateEmployeeDTO {
   email?: string;
   nroDocument?: string;
   birthDate?: string;
+  imageURL?: string;
+  type?: string;
+  accessCode?: string;
+  phone?: string;
+  employeeToken: string;
 }

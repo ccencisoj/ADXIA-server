@@ -5,7 +5,10 @@ const ClientSchema = new Schema({
   name: {type: String, required: true},
   surname: {type: String, required: true},
   nroDocument: {type: String, required: true},
-  phoneNumber: {type: String, required: true}
+  phoneNumber: {type: String, required: true},
+  address: {type: String, required: true},
+  imageURL: {type: String, required: true},
+  business: {type: String, required: true},
 });
 
 const ClientModel = model("Client", ClientSchema);

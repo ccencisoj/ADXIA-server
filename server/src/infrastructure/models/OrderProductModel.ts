@@ -6,7 +6,8 @@ const OrderProductSchema = new Schema({
   name: {type: String, required: true},
   brand: {type: String, required: true},
   avaliableQuantity: {type: Number, required: true},
-  price: {type: Number, required: true}
+  price: {type: Number, required: true},
+  imageURL: {type: String, required: true}
 });
 
 const OrderProductModel = model("OrderProduct", OrderProductSchema);

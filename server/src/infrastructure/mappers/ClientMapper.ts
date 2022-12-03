@@ -12,6 +12,9 @@ type ClientRaw = {
   surname: string;
   nroDocument: string;
   phoneNumber: string;
+  address: string;
+  imageURL: string;
+  business: string;
 };
 
 export class ClientMapper {
@@ -21,7 +24,10 @@ export class ClientMapper {
       name: client.name,
       surname: client.surname,
       nroDocument: client.nroDocument,
-      phoneNumber: client.phoneNumber
+      phoneNumber: client.phoneNumber,
+      address: client.address,
+      imageURL: client.imageURL,
+      business: client.business
     }
   }
 
@@ -31,7 +37,10 @@ export class ClientMapper {
       name: client.name,
       surname: client.surname,
       nroDocument: client.nroDocument,
-      phoneNumber: client.phoneNumber
+      phoneNumber: client.phoneNumber,
+      address: client.address,
+      imageURL: client.imageURL,
+      business: client.business
     }
   }
 
@@ -44,7 +53,10 @@ export class ClientMapper {
       name: nameOrError.getValue(),
       surname: surnameOrError.getValue(),
       nroDocument: nroDocumentOrError.getValue(),
-      phoneNumber: phoneNumberOrError.getValue()
+      phoneNumber: phoneNumberOrError.getValue(),
+      address: raw.address,
+      imageURL: raw.address,
+      business: raw.business
     }, raw.id);
     const client = clientOrError.getValue();
     return client;

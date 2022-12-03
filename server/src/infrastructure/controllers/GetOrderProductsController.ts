@@ -1,0 +1,46 @@
+import { HttpRequest } from '../http/HttpRequest';
+import { HttpReponse } from '../http/HttpResponse';
+import { OrderProductMapper } from '../mappers/OrderProductMapper';
+import { ControllerErrorHandler } from '../errorHandlers/ControllerErrorHandler';
+import { GetOrderProductsDTO, GetOrderProductsUseCase } from '../../application';
+
+interface GetOrderProductsControllerDeps {
+  getOrderProductsUseCase: GetOrderProductsUseCase;
+  controllerErrorHandler: ControllerErrorHandler
+}
+
+export class GetOrderProductsController {
+  public readonly route = "/order/products";
+
+  protected readonly getOrderProductsUseCase: GetOrderProductsUseCase;
+  protected readonly controllerErrorHandler: ControllerErrorHandler;
+
+  public constructor({
+    getOrderProductsUseCase, 
+    controllerErrorHandler
+  }: GetOrderProductsControllerDeps) {
+    this.getOrderProductsUseCase = getOrderProductsUseCase;
+    this.controllerErrorHandler = controllerErrorHandler;
+  }
+
+  public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
+    const reqData = {
+      orderId: req.query.orderId,
+      skip: Number(req.query.skip),
+      limit: Number(req.query.limit)
+    } as GetOrderProductsDTO;
+
+    try {
+      const orderProducts = await this.getOrderProductsUseCase.execute(reqData);
+
+      const orderProductsJSON = orderProducts.map((orderProduct)=> {
+        return OrderProductMapper.toJSON(orderProduct);
+      });
+
+      res.json({orderProducts: orderProductsJSON});
+
+    }catch(error) {
+      this.controllerErrorHandler.execute(req, res, error);
+    }
+  }
+}

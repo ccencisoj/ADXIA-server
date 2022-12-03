@@ -37,6 +37,10 @@ export class OrderProductRepository implements IOrderProductRepository {
     await this.model.deleteOne({id: OrderProduct.id}); 
   }
 
+  public deleteMany = async (filter: any): Promise<void> => {
+    await this.model.deleteMany(filter);
+  }
+
   public existsById = async (entityId: string): Promise<boolean> => {
     const repoOrderProduct = await this.model.findOne({id: entityId});
     const exists = !!repoOrderProduct ? true : false;

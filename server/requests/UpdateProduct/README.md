@@ -10,7 +10,7 @@
 
 Entradas obligatorias: productId
 
-Entradas opcionales: name, brand, avaliableQuantity y price
+Entradas opcionales: name, brand, avaliableQuantity, price y imageURL
 
 ## Respuesta exitosa
 

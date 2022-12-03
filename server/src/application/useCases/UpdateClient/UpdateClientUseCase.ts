@@ -54,7 +54,10 @@ export class UpdateClientUseCase {
       name: nameOrError.getValue(),
       surname: surnameOrError.getValue(),
       nroDocument: nroDocumentOrError.getValue(),
-      phoneNumber: phoneNumberOrError.getValue()
+      phoneNumber: phoneNumberOrError.getValue(),
+      address: req.address,
+      imageURL: req.imageURL,
+      business: req.business
     }, client.id);
 
     if(updatedClientOrError.isFailure) {

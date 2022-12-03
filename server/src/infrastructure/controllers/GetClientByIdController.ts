@@ -13,6 +13,8 @@ interface GetClientByIdControllerDeps {
 }
 
 export class GetClientByIdController {
+  public readonly route = "/client";
+
   protected readonly getClientByIdUseCase: GetClientByIdUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 

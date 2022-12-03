@@ -13,6 +13,8 @@ interface CreateClientControllerDeps {
 }
 
 export class CreateClientController {
+  public readonly route = "/client";
+
   protected readonly createClientUseCase: CreateClientUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
@@ -29,7 +31,10 @@ export class CreateClientController {
       name: req.body.name,
       surname: req.body.surname,
       nroDocument: req.body.nroDocument,
-      phoneNumber: req.body.phoneNumber
+      phoneNumber: req.body.phoneNumber,
+      address: req.body.address,
+      imageURL: req.body.imageURL,
+      business: req.body.business
     } as CreateClientDTO;
 
     try {

@@ -27,6 +27,7 @@ export class CreateClientUseCase {
   }
 
   public execute = async (req: CreateClientDTO): Response => {
+
     const client = await this.clientRepository.findOne({
       nroDocument: req.nroDocument
     });
@@ -35,8 +36,6 @@ export class CreateClientUseCase {
     if(alreadyRegistered) {
       throw new ClientAlreadyRegisteredException(client);
     }
-
-    console.log(req);
 
     const nameOrError = PersonName.create(req.name);
     const surnameOrError = PersonSurname.create(req.surname);
@@ -57,7 +56,10 @@ export class CreateClientUseCase {
       name: nameOrError.getValue(),
       surname: surnameOrError.getValue(),
       nroDocument: nroDocumentOrError.getValue(),
-      phoneNumber: phoneNumberOrError.getValue()
+      phoneNumber: phoneNumberOrError.getValue(),
+      address: req.address,
+      imageURL: req.imageURL,
+      business: req.business
     });
 
     if(newClientOrError.isFailure) {

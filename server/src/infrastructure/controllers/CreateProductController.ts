@@ -13,6 +13,8 @@ interface CreateProductControllerDeps {
 }
 
 export class CreateProductController {
+  public readonly route = "/product";
+
   protected readonly createProductUseCase: CreateProductUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
@@ -29,7 +31,9 @@ export class CreateProductController {
       name: req.body.name,
       brand: req.body.brand,
       avaliableQuantity: Number(req.body.avaliableQuantity),
-      price: Number(req.body.price)
+      price: Number(req.body.price),
+      address: req.body.address,
+      imageURL: req.body.imageURL
     } as CreateProductDTO;
 
     try {

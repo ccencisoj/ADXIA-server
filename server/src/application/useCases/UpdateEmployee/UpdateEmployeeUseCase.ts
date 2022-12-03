@@ -1,4 +1,5 @@
 import { UpdateEmployeeDTO } from "./UpdateEmployeeDTO";
+import { IHashService } from "../../services/IHashService";
 import { EmployeeException } from "../../exceptions/EmployeeException";
 import { ValidationException } from "../../exceptions/ValidationException";
 import { IEmployeeRepository } from "../../repositories/IEmployeeRepository";
@@ -19,13 +20,16 @@ type Response = Promise<void>;
 
 interface UpdateEmployeeUseCaseDeps {
   employeeRepository: IEmployeeRepository;
+  hashService: IHashService;
 }
 
 export class UpdateEmployeeUseCase {
   protected readonly employeeRepository: IEmployeeRepository;
+  protected readonly hashService: IHashService;
 
-  public constructor({employeeRepository}: UpdateEmployeeUseCaseDeps) {
+  public constructor({employeeRepository, hashService}: UpdateEmployeeUseCaseDeps) {
     this.employeeRepository = employeeRepository;
+    this.hashService = hashService;
   }
 
   public execute = async (req: UpdateEmployeeDTO): Response => {
@@ -53,12 +57,21 @@ export class UpdateEmployeeUseCase {
       throw new ValidationException(combinedResult.getError() as string);
     }
 
+    const imageURL = req.imageURL || employee.imageURL;
+    const type = req.type || employee.type;
+    const accessCode = req.accessCode ? this.hashService.hash(req.accessCode) : req.accessCode;
+    const phone = req.phone || employee.phone;
+
     const updatedEmployeeOrError = Employee.create({
       name: nameOrError.getValue(),
       surname: surnameOrError.getValue(),
       email: emailOrError.getValue(),
       nroDocument: nroDocumentOrError.getValue(),
-      birthDate: birthDateOrError.getValue()
+      birthDate: birthDateOrError.getValue(),
+      imageURL: imageURL,
+      type: type,
+      accessCode: accessCode,
+      phone: phone
     }, employee.id);
 
     if(updatedEmployeeOrError.isFailure) {
