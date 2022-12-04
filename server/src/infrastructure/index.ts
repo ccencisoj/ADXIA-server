@@ -27,6 +27,7 @@ export { LoginEmployeeController } from './controllers/LoginEmployeeController';
 
 // ErrorHandlers
 export { ControllerErrorHandler } from './errorHandlers/ControllerErrorHandler';
+export { MiddlewareErrorHandler } from './errorHandlers/MiddlewareErrorHandler';
 
 // EventHandlers
 

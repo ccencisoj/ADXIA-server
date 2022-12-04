@@ -3,21 +3,16 @@ import { config } from '../config';
 import { v4 as uuid } from 'uuid';
 import { Employee, Result } from "../../domain";
 import { IEmployeeTokenService } from "../../application";
-import { EmployeeCredentialsException } from '../../application/exceptions/EmployeeCredentialsException';
-
-type DecodedToken = { 
-  id: string, 
-  type: string 
-};
+import { DecodedEmployee } from '../../application/dtos/DecodedEmployee';
 
 export class EmployeeTokenService implements IEmployeeTokenService {
   validate = (token: string): Result<any> => {
-    let decodedToken: DecodedToken;
+    let decodedToken: DecodedEmployee;
 
     try {
-      decodedToken = JWT.verify(token, config.JWT_SECRET_KEY) as DecodedToken;
+      decodedToken = JWT.verify(token, config.JWT_SECRET_KEY) as DecodedEmployee;
     }catch(error) {
-      throw new EmployeeCredentialsException();
+      return Result.fail("The token isn´t valid");
     }
 
     return Result.ok();
@@ -33,13 +28,13 @@ export class EmployeeTokenService implements IEmployeeTokenService {
     return token;
   }
 
-  decode = (token: string): Result<DecodedToken>  => {
-    let decodedToken: DecodedToken;
+  decode = (token: string): Result<DecodedEmployee>  => {
+    let decodedToken: DecodedEmployee;
 
     try {
-      decodedToken = JWT.verify(token, config.JWT_SECRET_KEY) as DecodedToken;
+      decodedToken = JWT.verify(token, config.JWT_SECRET_KEY) as DecodedEmployee;
     }catch(error) {
-      throw new EmployeeCredentialsException();
+      return Result.fail("The token isn´t valid");
     }
 
     return Result.ok(decodedToken);

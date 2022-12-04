@@ -2,7 +2,10 @@ import { UpdateClientDTO } from "./UpdateClientDTO";
 import { ClientException } from "../../exceptions/ClientException";
 import { IClientRepository } from "../../repositories/IClientRepository";
 import { ValidationException } from "../../exceptions/ValidationException";
+import { IEmployeeTokenService } from "../../services/IEmployeeTokenService";
 import { ClientNoFoundException } from "../../exceptions/ClientNoFoundException";
+import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
+import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
 import { 
   Client, 
   Result,
@@ -11,23 +14,43 @@ import {
   PersonDocument, 
   PersonPhoneNumber,
   UpdatedClientEvent,
-  DomainEvents
+  DomainEvents,
+  EmployeeType
 } from "../../../domain";
 
 type Response = Promise<void>;
 
 interface UpdateClientUseCaseDeps {
   clientRepository: IClientRepository;
+  employeeTokenService: IEmployeeTokenService;
 }
 
 export class UpdateClientUseCase {
   protected readonly clientRepository: IClientRepository;
+  protected readonly employeeTokenService: IEmployeeTokenService;
 
-  public constructor({clientRepository}: UpdateClientUseCaseDeps) {
+  public constructor({
+    clientRepository,
+    employeeTokenService
+  }: UpdateClientUseCaseDeps) {
     this.clientRepository = clientRepository;
+    this.employeeTokenService = employeeTokenService;
   }
 
   public execute = async (req: UpdateClientDTO): Response => {
+    const decodedEmployeeOrError = this.employeeTokenService.decode(req.employeeToken);
+
+    if(decodedEmployeeOrError.isFailure) {
+      throw new EmployeeCredentialsException(decodedEmployeeOrError.getError() as string);
+    }
+
+    const decodedEmployee = decodedEmployeeOrError.getValue();
+
+    if(!(decodedEmployee.type === EmployeeType.ADMIN || 
+      decodedEmployee.type === EmployeeType.VENDOR)) {
+      throw new EmployeeActionNoAllowedException();
+    }
+
     const client = await this.clientRepository.findOne({id: req.clientId});
     const clientFound = !!client;
 

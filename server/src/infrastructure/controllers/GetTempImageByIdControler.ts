@@ -1,5 +1,7 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import { GetTempImageByIdDTO, GetTempImageByIdUseCase } from "../../application";
 
@@ -22,10 +24,19 @@ export class GetTempImageByIdController {
     this.controllerErrorHandler = controllerErrorHandler;
   }
 
-  public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = { imageId: req.params.imageId } as GetTempImageByIdDTO;
-
+  public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {    
     try {
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = { 
+        imageId: req.params.imageId,
+        employeeToken: employeeTokenOrError.getValue()
+      } as GetTempImageByIdDTO;
+
       const image = await this.getTempImageByIdUseCase.execute(reqData);
 
       // No muestra imagen con jpg

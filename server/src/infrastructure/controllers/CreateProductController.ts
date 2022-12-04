@@ -1,6 +1,8 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { ProductMapper } from "../mappers/ProductMapper";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
   CreateProductDTO, 
@@ -27,20 +29,27 @@ export class CreateProductController {
   }
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      name: req.body.name,
-      brand: req.body.brand,
-      avaliableQuantity: Number(req.body.avaliableQuantity),
-      price: Number(req.body.price),
-      address: req.body.address,
-      imageURL: req.body.imageURL
-    } as CreateProductDTO;
-
     try {
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = {
+        name: req.body.name,
+        brand: req.body.brand,
+        avaliableQuantity: Number(req.body.avaliableQuantity),
+        price: Number(req.body.price),
+        address: req.body.address,
+        imageURL: req.body.imageURL,
+        employeeToken: employeeTokenOrError.getValue()
+      } as CreateProductDTO;
+
       const product = await this.createProductUseCase.execute(reqData);
-
+  
       const productJSON = ProductMapper.toJSON(product);
-
+  
       res.json({product: productJSON});
 
     }catch(error) {

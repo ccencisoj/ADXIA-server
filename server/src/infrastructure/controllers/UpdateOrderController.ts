@@ -1,7 +1,9 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
 import { UpdateOrderDTO, UpdateOrderUseCase } from "../../application";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler"
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 
 interface UpdateOrderControllerDeps {
   updateOrderUseCase: UpdateOrderUseCase;
@@ -23,13 +25,20 @@ export class UpdateOrderController {
   } 
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      orderId: req.query.orderId,
-      clientId: req.body.clientId,
-      productIds: req.body.products
-    } as UpdateOrderDTO;
-
     try {
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = {
+        orderId: req.query.orderId,
+        clientId: req.body.clientId,
+        productIds: req.body.products,
+        employeeToken: employeeTokenOrError.getValue()
+      } as UpdateOrderDTO;
+
       await this.updateOrderUseCase.execute(reqData);
 
       res.json({updated: true});

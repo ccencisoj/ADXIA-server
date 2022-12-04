@@ -1,5 +1,7 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
   DeleteProductDTO, 
@@ -26,11 +28,19 @@ export class DeleteProductController {
   }
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      productId: req.query.productId
-    } as DeleteProductDTO;
-
     try {
+
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = {
+        productId: req.query.productId,
+        employeeToken: employeeTokenOrError.getValue()
+      } as DeleteProductDTO;
+
       await this.deleteProductUseCase.execute(reqData);
 
       res.json({deleted: true});

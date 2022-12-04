@@ -2,7 +2,10 @@ import { CreateClientDTO } from './CreateClientDTO';
 import { ClientException } from '../../exceptions/ClientException';
 import { IClientRepository } from "../../repositories/IClientRepository";
 import { ValidationException } from '../../exceptions/ValidationException';
+import { IEmployeeTokenService } from '../../services/IEmployeeTokenService';
+import { EmployeeCredentialsException } from '../../exceptions/EmployeeCredentialsException';
 import { ClientAlreadyRegisteredException } from '../../exceptions/ClientAlreadyRegisteredException';
+import { EmployeeActionNoAllowedException } from '../../exceptions/EmployeeActionNoAllowedException';
 import { 
   Client, 
   Result, 
@@ -10,23 +13,42 @@ import {
   PersonName, 
   PersonSurname, 
   PersonDocument, 
-  PersonPhoneNumber  
+  PersonPhoneNumber,  
+  EmployeeType
 } from '../../../domain';
 
 type Response = Promise<Client>;
 
 interface CreateClientUseCaseDeps {
   clientRepository: IClientRepository;
+  employeeTokenService: IEmployeeTokenService;
 }
 
 export class CreateClientUseCase {
   protected readonly clientRepository: IClientRepository;
+  protected readonly employeeTokenService: IEmployeeTokenService;
 
-  public constructor({clientRepository}: CreateClientUseCaseDeps) {
+  public constructor({
+    clientRepository, 
+    employeeTokenService
+  }: CreateClientUseCaseDeps) {
     this.clientRepository = clientRepository;
+    this.employeeTokenService = employeeTokenService;
   }
 
   public execute = async (req: CreateClientDTO): Response => {
+    const decodedEmployeeOrError = this.employeeTokenService.decode(req.employeeToken);
+
+    if(decodedEmployeeOrError.isFailure) {
+      throw new EmployeeCredentialsException(decodedEmployeeOrError.getError() as string);
+    }
+
+    const decodedEmployee = decodedEmployeeOrError.getValue();
+
+    if(!(decodedEmployee.type === EmployeeType.ADMIN ||
+      decodedEmployee.type === EmployeeType.VENDOR)) {
+      throw new EmployeeActionNoAllowedException();
+    }
 
     const client = await this.clientRepository.findOne({
       nroDocument: req.nroDocument

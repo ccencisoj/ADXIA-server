@@ -53,7 +53,8 @@ import {
 
 // Import ErrorHandlers
 import {
-  ControllerErrorHandler
+  ControllerErrorHandler,
+  MiddlewareErrorHandler
 } from './infrastructure';
 
 // Import Middlewares
@@ -100,35 +101,38 @@ const imageService = new ImageService({tempImageRepository});
 const hashService = new HashService();
 const employeeTokenService = new EmployeeTokenService();
 
-// Middlewares
-const uploadImageMiddleware = new UploadImageMiddleware();
+const hash = hashService.hash("123123");
 
 // UseCases
-const createClientUseCase = new CreateClientUseCase({clientRepository});
-const createEmployeeUseCase = new CreateEmployeeUseCase({employeeRepository, hashService});
-const createOrderUseCase = new CreateOrderUseCase({clientRepository, orderRepository});
-const createProductUseCase = new CreateProductUseCase({productRepository});
-const deleteClientUseCase = new DeleteClientUseCase({clientRepository});
-const deleteEmployeeUseCase = new DeleteEmployeeUseCase({employeeRepository});
-const deleteOrderUseCase = new DeleteOrderUseCase({clientRepository, orderRepository});
-const deleteProductUseCase = new DeleteProductUseCase({productRepository});
-const getClientByIdUseCase = new GetClientByIdUseCase({clientRepository});
-const getClientsUseCase = new GetClientsUseCase({clientRepository});
-const getEmployeeByIdUseCase = new GetEmployeeByIdUseCase({employeeRepository});
-const getEmployeesUseCase = new GetEmployeesUseCase({employeeRepository});
-const getOrdersUseCase = new GetOrdersUseCase({orderRepository});
-const getProductsUseCase = new GetProductsUseCase({productRepository});
-const updateClientUseCase = new UpdateClientUseCase({clientRepository});
-const updateEmployeeUseCase = new UpdateEmployeeUseCase({employeeRepository, hashService});
-const updateProductUseCase = new UpdateProductUseCase({productRepository});
-const saveTempImageUseCase = new SaveTempImageUseCase({imageService});
-const getTempImageByIdUseCase = new GetTempImageByIdUseCase({imageService});
-const updateOrderUseCase = new UpdateOrderUseCase({orderRepository, orderProductRepository, productRepository});
-const getOrderProductsUseCase = new GetOrderProductsUseCase({orderRepository, orderProductRepository});
+const createClientUseCase = new CreateClientUseCase({clientRepository, employeeTokenService});
+const createEmployeeUseCase = new CreateEmployeeUseCase({employeeRepository, hashService, employeeTokenService});
+const createOrderUseCase = new CreateOrderUseCase({clientRepository, orderRepository, employeeTokenService});
+const createProductUseCase = new CreateProductUseCase({productRepository, employeeTokenService});
+const deleteClientUseCase = new DeleteClientUseCase({clientRepository, employeeTokenService});
+const deleteEmployeeUseCase = new DeleteEmployeeUseCase({employeeRepository, employeeTokenService});
+const deleteOrderUseCase = new DeleteOrderUseCase({clientRepository, orderRepository, employeeTokenService});
+const deleteProductUseCase = new DeleteProductUseCase({productRepository, employeeTokenService});
+const getClientByIdUseCase = new GetClientByIdUseCase({clientRepository, employeeTokenService});
+const getClientsUseCase = new GetClientsUseCase({clientRepository, employeeTokenService});
+const getEmployeeByIdUseCase = new GetEmployeeByIdUseCase({employeeRepository, employeeTokenService});
+const getEmployeesUseCase = new GetEmployeesUseCase({employeeRepository, employeeTokenService});
+const getOrdersUseCase = new GetOrdersUseCase({orderRepository, employeeTokenService});
+const getProductsUseCase = new GetProductsUseCase({productRepository, employeeTokenService});
+const updateClientUseCase = new UpdateClientUseCase({clientRepository, employeeTokenService});
+const updateEmployeeUseCase = new UpdateEmployeeUseCase({employeeRepository, hashService, employeeTokenService});
+const updateProductUseCase = new UpdateProductUseCase({productRepository, employeeTokenService});
+const saveTempImageUseCase = new SaveTempImageUseCase({imageService, employeeTokenService});
+const getTempImageByIdUseCase = new GetTempImageByIdUseCase({imageService, employeeTokenService});
+const updateOrderUseCase = new UpdateOrderUseCase({orderRepository, orderProductRepository, productRepository, employeeTokenService});
+const getOrderProductsUseCase = new GetOrderProductsUseCase({orderRepository, orderProductRepository, employeeTokenService});
 const loginEmployeeUseCase = new LoginEmployeeUseCase({employeeRepository, hashService, employeeTokenService});
 
 // Error Handlers
 const controllerErrorHandler = new ControllerErrorHandler();
+const middlewareErrorHandler = new MiddlewareErrorHandler();
+
+// Middlewares
+const uploadImageMiddleware = new UploadImageMiddleware({middlewareErrorHandler});
 
 // Controllers
 const createClientController = new CreateClientController({createClientUseCase, controllerErrorHandler});

@@ -1,10 +1,13 @@
 import { UpdateOrderDTO } from "./UpdateOrderDTO";
 import { IOrderRepository } from "../../repositories/IOrderRepository";
 import { IProductRepository } from "../../repositories/IProductRepository";
+import { IEmployeeTokenService } from "../../services/IEmployeeTokenService";
 import { OrderNoFoundException } from "../../exceptions/OrderNoFoundException";
 import { OrderProductException } from "../../exceptions/OrderProductException";
 import { IOrderProductRepository } from "../../repositories/IOrderProductRepository";
-import { OrderProduct, ProductBrand, ProductName, ProductPrice, ProductQuantity } from "../../../domain";
+import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
+import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
+import { EmployeeType, OrderProduct, ProductBrand, ProductName, ProductPrice, ProductQuantity } from "../../../domain";
 
 type Response = Promise<void>;
 
@@ -12,24 +15,41 @@ interface UpdateOrderUseCaseDeps {
   orderRepository: IOrderRepository;
   productRepository: IProductRepository;
   orderProductRepository: IOrderProductRepository;
+  employeeTokenService: IEmployeeTokenService;
 }
 
 export class UpdateOrderUseCase {
   protected readonly orderRepository: IOrderRepository;
   protected readonly productRepository: IProductRepository;
   protected readonly orderProductRepository: IOrderProductRepository;
+  protected readonly employeeTokenService: IEmployeeTokenService;
   
   public constructor({
     orderRepository, 
     productRepository,
-    orderProductRepository
+    orderProductRepository,
+    employeeTokenService
   }: UpdateOrderUseCaseDeps) {
     this.orderRepository = orderRepository;
     this.productRepository = productRepository;
+    this.employeeTokenService = employeeTokenService;
     this.orderProductRepository = orderProductRepository;
   }
 
   public execute = async (req: UpdateOrderDTO): Response => {
+    const decodedEmployeeOrError = this.employeeTokenService.decode(req.employeeToken);
+
+    if(decodedEmployeeOrError.isFailure) {
+      throw new EmployeeCredentialsException(decodedEmployeeOrError.getError() as string);
+    }
+
+    const decodedEmployee = decodedEmployeeOrError.getValue();
+
+    if(!(decodedEmployee.type === EmployeeType.ADMIN ||
+      decodedEmployee.type === EmployeeType.VENDOR)) {
+      throw new EmployeeActionNoAllowedException();
+    }
+
     const order = await this.orderRepository.findOne({id: req.orderId});
     const orderFound = !!order;
 

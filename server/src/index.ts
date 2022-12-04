@@ -51,7 +51,7 @@ const MONGO_URI = config.MONGO_URI;
 
   // Employee Routes
   apiRouter.get(getEmployeeByIdController.route, getEmployeeByIdController.execute);
-  apiRouter.get(getEmployeeByIdController.route, getEmployeesController.execute);
+  apiRouter.get(getEmployeesController.route, getEmployeesController.execute);
   apiRouter.post(createEmployeeController.route, createEmployeeController.execute);
   apiRouter.delete(deleteEmployeeController.route, deleteEmployeeController.execute);
   apiRouter.put(updateEmployeeController.route, updateEmployeeController.execute);

@@ -2,7 +2,10 @@ import { UpdateProductDTO } from './UpdateProductDTO';
 import { ProductException } from '../../exceptions/ProductException';
 import { ValidationException } from '../../exceptions/ValidationException';
 import { IProductRepository } from "../../repositories/IProductRepository";
+import { IEmployeeTokenService } from '../../services/IEmployeeTokenService';
 import { ProductNoFoundException } from '../../exceptions/ProductNoFoundException';
+import { EmployeeCredentialsException } from '../../exceptions/EmployeeCredentialsException';
+import { EmployeeActionNoAllowedException } from '../../exceptions/EmployeeActionNoAllowedException';
 import { 
   Product, 
   Result, 
@@ -11,23 +14,42 @@ import {
   ProductName, 
   ProductPrice, 
   ProductQuantity,
-  UpdatedProductEvent 
+  UpdatedProductEvent, 
+  EmployeeType
 } from '../../../domain';
 
 type Response = Promise<void>;
 
 interface UpdateProductUseCaseDeps {
   productRepository: IProductRepository;
+  employeeTokenService: IEmployeeTokenService;
 }
 
 export class UpdateProductUseCase {
   protected readonly productRepository: IProductRepository;
+  protected readonly employeeTokenService: IEmployeeTokenService;
 
-  public constructor({productRepository}: UpdateProductUseCaseDeps) {
+  public constructor({
+    productRepository, 
+    employeeTokenService
+  }: UpdateProductUseCaseDeps) {
     this.productRepository = productRepository;
+    this.employeeTokenService = employeeTokenService;
   }
 
   public execute = async (req: UpdateProductDTO): Response  => {
+    const decodedEmployeeOrError = this.employeeTokenService.decode(req.employeeToken);
+
+    if(decodedEmployeeOrError.isFailure) {
+      throw new EmployeeCredentialsException(decodedEmployeeOrError.getError() as string);
+    }
+
+    const decodedEmployee = decodedEmployeeOrError.getValue();
+
+    if(!(decodedEmployee.type === EmployeeType.ADMIN)) {
+      throw new EmployeeActionNoAllowedException();
+    }
+
     const product = await this.productRepository.findOne({id: req.productId});
     const productFound = !!product;
 

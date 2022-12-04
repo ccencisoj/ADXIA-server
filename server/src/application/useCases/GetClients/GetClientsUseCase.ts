@@ -1,21 +1,44 @@
-import { Client } from "../../../domain";
+import { Client, EmployeeType } from "../../../domain";
 import { GetClientsDTO } from "./GetClientsDTO";
 import { IClientRepository } from "../../repositories/IClientRepository";
+import { IEmployeeTokenService } from "../../services/IEmployeeTokenService";
+import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
+import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
 
 type Response = Promise<Client[]>;
 
 interface GetClientsUseCaseDeps {
   clientRepository: IClientRepository;
+  employeeTokenService: IEmployeeTokenService;
 }
 
 export class GetClientsUseCase {
   protected readonly clientRepository: IClientRepository;
+  protected readonly employeeTokenService: IEmployeeTokenService;
 
-  public constructor({clientRepository}: GetClientsUseCaseDeps) {
+  public constructor({
+    clientRepository,
+    employeeTokenService
+  }: GetClientsUseCaseDeps) {
     this.clientRepository = clientRepository;
+    this.employeeTokenService = employeeTokenService;
   }
 
   public execute = async (req: GetClientsDTO): Response => {
+    const decodedEmployeeOrError = this.employeeTokenService.decode(req.employeeToken);
+
+    if(decodedEmployeeOrError.isFailure) {
+      throw new EmployeeCredentialsException(decodedEmployeeOrError.getError() as string);
+    }
+
+    const decodedEmployee = decodedEmployeeOrError.getValue();
+
+    if(!(decodedEmployee.type === EmployeeType.ADMIN ||
+      decodedEmployee.type === EmployeeType.ADMIN ||
+      decodedEmployee.type === EmployeeType.DELIVERER)) {
+      throw new EmployeeActionNoAllowedException();
+    }
+
     const clients = await this.clientRepository.findMany({}, req.skip, req.limit);
     
     return clients;

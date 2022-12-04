@@ -1,6 +1,8 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { ClientMapper } from "../mappers/ClientMapper";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
   CreateClientDTO, 
@@ -27,17 +29,24 @@ export class CreateClientController {
   }
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      name: req.body.name,
-      surname: req.body.surname,
-      nroDocument: req.body.nroDocument,
-      phoneNumber: req.body.phoneNumber,
-      address: req.body.address,
-      imageURL: req.body.imageURL,
-      business: req.body.business
-    } as CreateClientDTO;
-
     try {
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = {
+        name: req.body.name,
+        surname: req.body.surname,
+        nroDocument: req.body.nroDocument,
+        phoneNumber: req.body.phoneNumber,
+        address: req.body.address,
+        imageURL: req.body.imageURL,
+        business: req.body.business,
+        employeeToken: employeeTokenOrError.getValue()
+      } as CreateClientDTO;
+
       const client = await this.createClientUseCase.execute(reqData);
 
       const clientJSON = ClientMapper.toJSON(client);

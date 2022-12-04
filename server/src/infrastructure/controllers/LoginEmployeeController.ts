@@ -14,17 +14,21 @@ export class LoginEmployeeController {
   protected readonly loginEmployeeUseCase: LoginEmployeeUseCase;
   protected readonly controlllerErrorHandler: ControllerErrorHandler;
 
-  public constructor({loginEmployeeUseCase}: LoginEmployeeControllerDeps) {
+  public constructor({
+    loginEmployeeUseCase, 
+    controllerErrorHandler
+  }: LoginEmployeeControllerDeps) {
     this.loginEmployeeUseCase = loginEmployeeUseCase;
+    this.controlllerErrorHandler = controllerErrorHandler;
   }
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      nroDocument: req.body.nroDocument,
-      accessCode: req.body.accessCode
-    }
-
     try {
+      const reqData = {
+        nroDocument: req.body.nroDocument,
+        accessCode: req.body.accessCode
+      }
+
       const employeeToken = await this.loginEmployeeUseCase.execute(reqData);
 
       res.json({employeeToken});

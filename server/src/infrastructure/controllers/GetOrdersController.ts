@@ -1,6 +1,8 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { OrderMapper } from "../mappers/OrderMapper";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
   GetOrdersDTO, 
@@ -27,12 +29,19 @@ export class GetOrdersController {
   }
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      skip: Number(req.query.skip),
-      limit: Number(req.query.limit)
-    } as GetOrdersDTO;
-
     try {
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = {
+        skip: Number(req.query.skip),
+        limit: Number(req.query.limit),
+        employeeToken: employeeTokenOrError.getValue()
+      } as GetOrdersDTO;
+
       const orders = await this.getOrdersUseCase.execute(reqData);
       
       const orderJSON = orders.map((order)=> OrderMapper.toJSON(order));

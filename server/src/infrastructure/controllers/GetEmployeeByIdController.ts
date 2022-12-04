@@ -1,6 +1,8 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { EmployeeMapper } from "../mappers/EmployeeMapper";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
   GetEmployeeByIdDTO, 
@@ -27,11 +29,19 @@ export class GetEmployeeByIdController {
   }
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      employeeId: req.query.employeeId
-    } as GetEmployeeByIdDTO;
-
     try {
+
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = {
+        employeeId: req.query.employeeId,
+        employeeToken: employeeTokenOrError.getValue()
+      } as GetEmployeeByIdDTO;
+
       const employee = await this.getEmployeeByIdUseCase.execute(reqData);
 
       const employeeJSON = EmployeeMapper.toJSON(employee);

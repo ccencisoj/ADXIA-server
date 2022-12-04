@@ -3,7 +3,10 @@ import { IHashService } from "../../services/IHashService";
 import { EmployeeException } from "../../exceptions/EmployeeException";
 import { ValidationException } from "../../exceptions/ValidationException";
 import { IEmployeeRepository } from "../../repositories/IEmployeeRepository";
+import { IEmployeeTokenService } from "../../services/IEmployeeTokenService";
 import { EmployeeNoFoundException } from "../../exceptions/EmployeeNoFoundException";
+import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
+import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
 import { 
   Result, 
   DateTime, 
@@ -13,7 +16,8 @@ import {
   PersonSurname, 
   PersonDocument,
   UpdatedEmployeeEvent,
-  DomainEvents
+  DomainEvents,
+  EmployeeType
 } from "../../../domain";
 
 type Response = Promise<void>;
@@ -21,18 +25,37 @@ type Response = Promise<void>;
 interface UpdateEmployeeUseCaseDeps {
   employeeRepository: IEmployeeRepository;
   hashService: IHashService;
+  employeeTokenService: IEmployeeTokenService;
 }
 
 export class UpdateEmployeeUseCase {
   protected readonly employeeRepository: IEmployeeRepository;
   protected readonly hashService: IHashService;
+  protected readonly employeeTokenService: IEmployeeTokenService;
 
-  public constructor({employeeRepository, hashService}: UpdateEmployeeUseCaseDeps) {
+  public constructor({
+    employeeRepository, 
+    hashService, 
+    employeeTokenService
+  }: UpdateEmployeeUseCaseDeps) {
     this.employeeRepository = employeeRepository;
     this.hashService = hashService;
+    this.employeeTokenService = employeeTokenService;
   }
 
   public execute = async (req: UpdateEmployeeDTO): Response => {
+    const decodedEmployeeOrError = this.employeeTokenService.decode(req.employeeToken);
+
+    if(decodedEmployeeOrError.isFailure) {
+      throw new EmployeeCredentialsException(decodedEmployeeOrError.getError() as string);
+    }
+
+    const decodedEmployee = decodedEmployeeOrError.getValue();
+
+    if(!(decodedEmployee.type === EmployeeType.ADMIN)) {
+      throw new EmployeeActionNoAllowedException();
+    }
+
     const employee = await this.employeeRepository.findOne({id: req.employeeId});
     const employeeFound = !!employee;
 
@@ -45,12 +68,14 @@ export class UpdateEmployeeUseCase {
     const emailOrError = PersonEmail.create(req.email || employee.email);
     const nroDocumentOrError = PersonDocument.create(req.nroDocument || employee.nroDocument);
     const birthDateOrError = DateTime.create(req.birthDate || employee.birthDate);
+    const typeOrError = EmployeeType.create(req.type || employee.type);
     const combinedResult = Result.combine([
       nameOrError,
       surnameOrError,
       emailOrError,
       nroDocumentOrError,
-      birthDateOrError
+      birthDateOrError,
+      typeOrError
     ]);
 
     if(combinedResult.isFailure) {
@@ -69,7 +94,7 @@ export class UpdateEmployeeUseCase {
       nroDocument: nroDocumentOrError.getValue(),
       birthDate: birthDateOrError.getValue(),
       imageURL: imageURL,
-      type: type,
+      type: typeOrError.getValue(),
       accessCode: accessCode,
       phone: phone
     }, employee.id);

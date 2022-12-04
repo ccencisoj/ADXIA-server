@@ -1,6 +1,7 @@
 import { 
   DateTime, 
   Employee, 
+  EmployeeType, 
   PersonDocument, 
   PersonEmail, 
   PersonName, 
@@ -54,6 +55,7 @@ export class EmployeeMapper {
     const nameOrError = PersonName.create(raw.name);
     const surnameOrError = PersonSurname.create(raw.surname);
     const emailOrError = PersonEmail.create(raw.email);
+    const typeOrError = EmployeeType.create(raw.type);
     const birthDateOrError = DateTime.create(raw.birthDate);
     const nroDocumentOrError = PersonDocument.create(raw.nroDocument);
     const employeeOrError = Employee.create({
@@ -63,7 +65,7 @@ export class EmployeeMapper {
       birthDate: birthDateOrError.getValue(),
       nroDocument: nroDocumentOrError.getValue(),
       imageURL: raw.imageURL,
-      type: raw.type,
+      type: typeOrError.getValue(),
       accessCode: raw.accessCode,
       phone: raw.phone
     }, raw.id);

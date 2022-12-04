@@ -3,6 +3,7 @@ import { Result } from "./common/Result";
 import { PersonName } from "./PersonName";
 import { PersonEmail } from "./PersonEmail";
 import { PersonSurname } from "./PersonSurname";
+import { EmployeeType } from "./EmployeeType";
 import { PersonDocument } from "./PersonDocument";
 import { AggregateRoot } from "./common/AggregateRoot";
 import { CreatedEmployeeEvent } from "./events/CreatedEmployeeEvent";
@@ -14,7 +15,7 @@ interface EmployeeProps {
   nroDocument: PersonDocument;
   birthDate: DateTime;
   imageURL: string;
-  type: string;
+  type: EmployeeType;
   accessCode: string;
   phone: string;
 }
@@ -49,7 +50,7 @@ export class Employee extends AggregateRoot<EmployeeProps> {
   }
 
   public get type(): string {
-    return this.props.type;
+    return this.props.type.value;
   }
 
   public get accessCode(): string {

@@ -1,5 +1,7 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
   UpdateEmployeeDTO, 
@@ -26,19 +28,27 @@ export class UpdateEmployeeController {
   }
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      employeeId: req.query.employeeId,
-      name: req.body.name,
-      surname: req.body.surname,
-      email: req.body.email,
-      nroDocument: req.body.nroDocument,
-      birthDate: req.body.birthDate,
-      imageURL: req.body.imageURL,
-      type: req.body.type,
-      accessCode: req.body.accessCode
-    } as UpdateEmployeeDTO;
-
     try {
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = {
+        employeeId: req.query.employeeId,
+        name: req.body.name,
+        surname: req.body.surname,
+        email: req.body.email,
+        nroDocument: req.body.nroDocument,
+        birthDate: req.body.birthDate,
+        imageURL: req.body.imageURL,
+        type: req.body.type,
+        phone: req.body.phone,
+        accessCode: req.body.accessCode,
+        employeeToken: employeeTokenOrError.getValue()
+      } as UpdateEmployeeDTO;
+      
       await this.updateEmployeeUseCase.execute(reqData);
 
       res.json({updated: true});

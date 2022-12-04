@@ -1,6 +1,8 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { OrderMapper } from "../mappers/OrderMapper";
+import { getEmployeeToken } from "../helpers/getEmployeeToken";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
   CreateOrderDTO, 
@@ -27,11 +29,19 @@ export class CreateOrderController {
   }
 
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
-    const reqData = {
-      employeeId: req.body.employeeId
-    } as CreateOrderDTO;
-
     try {
+
+      const employeeTokenOrError = await getEmployeeToken(req);
+
+      if(employeeTokenOrError.isFailure) {
+        throw new EmployeeTokenException(employeeTokenOrError.getError() as string);
+      }
+
+      const reqData = {
+        employeeId: req.body.employeeId,
+        employeeToken: employeeTokenOrError.getValue()
+      } as CreateOrderDTO;
+
       const order = await this.createOrderUseCase.execute(reqData);
 
       const orderJSON = {

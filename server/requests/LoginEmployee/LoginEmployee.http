@@ -2,6 +2,6 @@ POST http://localhost:4000/api/employee/login
 Content-Type: application/json
 
 {
-  "nroDocument": "1002223332",
+  "nroDocument": "1002223334",
   "accessCode": "123456"
 }
