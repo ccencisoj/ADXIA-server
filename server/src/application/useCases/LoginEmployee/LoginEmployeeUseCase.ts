@@ -1,10 +1,14 @@
+import { Employee } from "../../../domain";
 import { LoginEmployeeDTO } from "./LoginEmployeeDTO";
 import { IEmployeeRepository } from "../../repositories/IEmployeeRepository";
 import { IEmployeeTokenService } from "../../services/IEmployeeTokenService";
 import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
 import { IHashService } from "../../services/IHashService";
 
-type Response = Promise<string>;
+type Response = Promise<{
+  employee: Employee;
+  employeeToken: string;
+}>;
 
 interface LoginEmployeeUseCaseDeps {
   employeeRepository: IEmployeeRepository;
@@ -43,6 +47,6 @@ export class LoginEmployeeUseCase {
 
     const employeeToken = this.employeeTokenService.generate(employee);
 
-    return employeeToken;
+    return { employee, employeeToken };
   }
 }

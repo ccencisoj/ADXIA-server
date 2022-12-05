@@ -1,6 +1,7 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { LoginEmployeeUseCase } from "../../application";
+import { EmployeeMapper } from "../mappers/EmployeeMapper";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 
 interface LoginEmployeeControllerDeps {
@@ -29,9 +30,11 @@ export class LoginEmployeeController {
         accessCode: req.body.accessCode
       }
 
-      const employeeToken = await this.loginEmployeeUseCase.execute(reqData);
+      const { employee, employeeToken } = await this.loginEmployeeUseCase.execute(reqData);
 
-      res.json({employeeToken});
+      const employeeJSON = EmployeeMapper.toJSON(employee);
+
+      res.json({employee: employeeJSON, employeeToken});
 
     }catch(error) {
       this.controlllerErrorHandler.execute(req, res, error);
