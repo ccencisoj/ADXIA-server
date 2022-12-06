@@ -21,7 +21,8 @@ import {
   GetTempImageByIdUseCase,
   UpdateOrderUseCase,
   GetOrderProductsUseCase,
-  LoginEmployeeUseCase
+  LoginEmployeeUseCase,
+  GetCurrentEmployeeUseCase
 } from './application';
 
 // Import Models
@@ -85,7 +86,8 @@ import {
   GetTempImageByIdController,
   UpdateOrderController,
   GetOrderProductsController,
-  LoginEmployeeController
+  LoginEmployeeController,
+  GetCurrentEmployeeController
 } from './infrastructure';
 
 // Repositories
@@ -126,6 +128,7 @@ const getTempImageByIdUseCase = new GetTempImageByIdUseCase({imageService, emplo
 const updateOrderUseCase = new UpdateOrderUseCase({orderRepository, orderProductRepository, productRepository, employeeTokenService});
 const getOrderProductsUseCase = new GetOrderProductsUseCase({orderRepository, orderProductRepository, employeeTokenService});
 const loginEmployeeUseCase = new LoginEmployeeUseCase({employeeRepository, hashService, employeeTokenService});
+const getCurrentEmployeeUseCase = new GetCurrentEmployeeUseCase({employeeRepository, employeeTokenService});
 
 // Error Handlers
 const controllerErrorHandler = new ControllerErrorHandler();
@@ -157,6 +160,8 @@ const getTempImageByIdController = new GetTempImageByIdController({getTempImageB
 const updateOrderController = new UpdateOrderController({updateOrderUseCase, controllerErrorHandler});
 const getOrderProductsController = new GetOrderProductsController({getOrderProductsUseCase, controllerErrorHandler});
 const loginEmployeeController = new LoginEmployeeController({loginEmployeeUseCase, controllerErrorHandler});
+const getCurrentEmployeeController = new GetCurrentEmployeeController({getCurrentEmployeeUseCase, controllerErrorHandler});
+
 
 export {
   createClientController,
@@ -181,5 +186,6 @@ export {
   uploadImageMiddleware,
   updateOrderController,
   getOrderProductsController,
-  loginEmployeeController
+  loginEmployeeController,
+  getCurrentEmployeeController
 };

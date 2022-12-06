@@ -26,7 +26,8 @@ import {
   uploadImageMiddleware,
   updateOrderController,
   getOrderProductsController,
-  loginEmployeeController
+  loginEmployeeController,
+  getCurrentEmployeeController
 } from './container';
 
 const PORT = config.PORT;
@@ -56,7 +57,8 @@ const MONGO_URI = config.MONGO_URI;
   apiRouter.delete(deleteEmployeeController.route, deleteEmployeeController.execute);
   apiRouter.put(updateEmployeeController.route, updateEmployeeController.execute);
   apiRouter.post(loginEmployeeController.route, loginEmployeeController.execute);
-
+  apiRouter.get(getCurrentEmployeeController.route, getCurrentEmployeeController.execute);
+  
   // Client Routes
   apiRouter.get(getClientByIdController.route, getClientByIdController.execute);
   apiRouter.get(getClientsController.route, getClientsController.execute);

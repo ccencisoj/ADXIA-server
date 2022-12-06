@@ -119,3 +119,7 @@ export { GetOrderProductsUseCase } from './useCases/GetOrderProducts/GetOrderPro
 // LoginEmployeeController 
 export { LoginEmployeeDTO } from './useCases/LoginEmployee/LoginEmployeeDTO';
 export { LoginEmployeeUseCase } from './useCases/LoginEmployee/LoginEmployeeUseCase';
+
+// GetCurrentEmployee
+export { GetCurrentEmployeeDTO } from './useCases/GetCurrentEmployee/GetCurrentEmployeeDTO';
+export { GetCurrentEmployeeUseCase } from './useCases/GetCurrentEmployee/GetCurrentEmployeeUseCase';
