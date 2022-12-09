@@ -14,6 +14,8 @@ type ProductRaw = {
   avaliableQuantity: number;
   price: number;
   imageURL: string;
+  description: string;
+  grammage: string;
 };
 
 export class ProductMapper {
@@ -24,7 +26,9 @@ export class ProductMapper {
       brand: Product.brand,
       avaliableQuantity: Product.avaliableQuantity,
       price: Product.price,
-      imageURL: Product.imageURL
+      imageURL: Product.imageURL,
+      description: Product.description,
+      grammage: Product.grammage
     }
   }
 
@@ -35,7 +39,9 @@ export class ProductMapper {
       brand: Product.brand,
       avaliableQuantity: Product.avaliableQuantity,
       price: Product.price,
-      imageURL: Product.imageURL
+      imageURL: Product.imageURL,
+      description: Product.description,
+      grammage: Product.grammage
     }
   }
 
@@ -49,7 +55,9 @@ export class ProductMapper {
       brand: brandOrError.getValue(),
       avaliableQuantity: avaliableQuantityOrError.getValue(),
       price: priceOrError.getValue(),
-      imageURL: raw.imageURL
+      imageURL: raw.imageURL,
+      description: raw.description,
+      grammage: raw.grammage
     }, raw.id);
     const product = productOrError.getValue();
     return product;

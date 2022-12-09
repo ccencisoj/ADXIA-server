@@ -6,6 +6,7 @@ import { CreatedOrderEvent } from "./events/CreatedOrderEvent";
 interface OrderProps {
   clientId?: string,
   employeeId: string;
+  total: number;
   createdAt: DateTime;
   deliveredAt?: DateTime;
 }
@@ -29,6 +30,10 @@ export class Order extends AggregateRoot<OrderProps> {
 
   public get deliveredAt(): DateTime {
     return this.props.deliveredAt;
+  }
+
+  public get total(): number {
+    return this.props.total;
   }
 
   private constructor(props: OrderProps, id?: string) {

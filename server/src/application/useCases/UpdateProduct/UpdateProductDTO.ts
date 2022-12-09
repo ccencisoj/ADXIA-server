@@ -6,4 +6,6 @@ export interface UpdateProductDTO {
   price: number;
   imageURL: string;
   employeeToken: string;
+  description: string;
+  grammage: string;
 }

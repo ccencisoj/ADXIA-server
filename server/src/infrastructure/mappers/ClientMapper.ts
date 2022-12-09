@@ -55,7 +55,7 @@ export class ClientMapper {
       nroDocument: nroDocumentOrError.getValue(),
       phoneNumber: phoneNumberOrError.getValue(),
       address: raw.address,
-      imageURL: raw.address,
+      imageURL: raw.imageURL,
       business: raw.business
     }, raw.id);
     const client = clientOrError.getValue();

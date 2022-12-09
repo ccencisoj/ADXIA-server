@@ -7,7 +7,8 @@ import { OrderProductException } from "../../exceptions/OrderProductException";
 import { IOrderProductRepository } from "../../repositories/IOrderProductRepository";
 import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
 import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
-import { EmployeeType, OrderProduct, ProductBrand, ProductName, ProductPrice, ProductQuantity } from "../../../domain";
+import { EmployeeType, Order, OrderProduct, ProductBrand, ProductName, ProductPrice, ProductQuantity } from "../../../domain";
+import { OrderException } from "../../exceptions/OrderException";
 
 type Response = Promise<void>;
 
@@ -59,6 +60,8 @@ export class UpdateOrderUseCase {
 
     await this.orderProductRepository.deleteMany({id: order.id});
 
+    let total = 0;
+
     for(let productId of req.productIds) {
       const product = await this.productRepository.findOne({id: productId});
       const productFound = !!product;
@@ -74,7 +77,9 @@ export class UpdateOrderUseCase {
           brand: brandOrError.getValue(),
           avaliableQuantity: avaliableQuantityOrError.getValue(),
           price: priceOrError.getValue(),
-          imageURL: product.imageURL
+          imageURL: product.imageURL,
+          description: product.description,
+          grammage: product.grammage
         });
 
         if(orderProductOrError.isFailure) {
@@ -84,7 +89,25 @@ export class UpdateOrderUseCase {
         const orderProduct = orderProductOrError.getValue();
 
         await this.orderProductRepository.save(orderProduct);
+
+        total += orderProduct.price;
       }
     }
+
+    const updatedOrderOrError = Order.create({
+      createdAt: order.createdAt,
+      employeeId: order.employeeId,
+      clientId: order.clientId,
+      deliveredAt: order.deliveredAt,
+      total: total
+    }, order.id);
+
+    if(updatedOrderOrError.isFailure) {
+      throw new OrderException(updatedOrderOrError.getError() as string);
+    }
+    
+    const updatedOrder = updatedOrderOrError.getValue();
+
+    await this.orderRepository.save(updatedOrder);
   }
 }

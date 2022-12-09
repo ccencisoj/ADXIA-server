@@ -6,6 +6,7 @@ type OrderRaw = {
   clientId: string,
   createdAt: string;
   deliveredAt: string;
+  total: number;
 };
 
 export class OrderMapper {
@@ -15,7 +16,8 @@ export class OrderMapper {
       clientId: order.clientId,
       employeeId: order.employeeId,
       createdAt: order.createdAt.value,
-      deliveredAt: order.deliveredAt?.value
+      deliveredAt: order.deliveredAt?.value,
+      total: order.total
     }
   }
 
@@ -25,7 +27,8 @@ export class OrderMapper {
       clientId: order.clientId,
       employeeId: order.employeeId,
       createdAt: order.createdAt.value,
-      deliveredAt: order.deliveredAt?.value
+      deliveredAt: order.deliveredAt?.value,
+      total: order.total
     }
   }
 
@@ -36,7 +39,8 @@ export class OrderMapper {
       clientId: raw.clientId,
       employeeId: raw.employeeId,
       createdAt: createdAtOrError.getValue(),
-      deliveredAt: deliveredAt.getValue()
+      deliveredAt: deliveredAt.getValue(),
+      total: raw.total
     }, raw.id);
     const order = orderOrError.getValue();
     return order;

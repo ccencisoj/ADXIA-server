@@ -1,6 +1,7 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { ApplicationException } from "../../application";
+import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 
 export class ControllerErrorHandler {
   public execute = async (req: HttpRequest, res: HttpReponse, error: any)=> {

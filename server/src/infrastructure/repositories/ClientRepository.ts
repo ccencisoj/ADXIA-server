@@ -17,7 +17,7 @@ export class ClientRepository implements IClientRepository {
   }
 
   public findMany = async (filter: any, skip: number, limit: number): Promise<Client[]> => {
-    const repoClients = await this.model.find(filter).skip(skip).limit(limit);
+    const repoClients = await this.model.find(filter).sort({"$natural": -1}).skip(skip).limit(limit);
     const clients = repoClients.map((repoClient)=> ClientMapper.toDomain(repoClient));
     return clients;
   }

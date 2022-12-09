@@ -14,6 +14,8 @@ type OrderProductRaw = {
   avaliableQuantity: number;
   price: number;
   imageURL: string;
+  description: string;
+  grammage: string;
 };
 
 export class OrderProductMapper {
@@ -25,7 +27,9 @@ export class OrderProductMapper {
       brand: orderProduct.brand,
       avaliableQuantity: orderProduct.avaliableQuantity,
       price: orderProduct.price,
-      imageURL: orderProduct.imageURL
+      imageURL: orderProduct.imageURL,
+      description: orderProduct.description,
+      grammage: orderProduct.grammage
     }
   }
 
@@ -37,7 +41,9 @@ export class OrderProductMapper {
       brand: orderProduct.brand,
       avaliableQuantity: orderProduct.avaliableQuantity,
       price: orderProduct.price,
-      imageURL: orderProduct.imageURL
+      imageURL: orderProduct.imageURL,
+      escription: orderProduct.description,
+      grammage: orderProduct.grammage
     }
   }
 
@@ -52,7 +58,9 @@ export class OrderProductMapper {
       brand: brandOrError.getValue(),
       avaliableQuantity: avaliableQuantityOrError.getValue(),
       price: priceOrError.getValue(),
-      imageURL: raw.imageURL
+      imageURL: raw.imageURL,
+      description: raw.description,
+      grammage: raw.grammage
     }, raw.id);
     const orderProduct = orderProductOrError.getValue();
     return orderProduct;

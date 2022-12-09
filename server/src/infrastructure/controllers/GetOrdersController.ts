@@ -44,9 +44,9 @@ export class GetOrdersController {
 
       const orders = await this.getOrdersUseCase.execute(reqData);
       
-      const orderJSON = orders.map((order)=> OrderMapper.toJSON(order));
+      const ordersJSON = orders.map((order)=> OrderMapper.toJSON(order));
 
-      res.json({orders: orderJSON});
+      res.json({orders: ordersJSON});
 
     }catch(error) {
       this.controllerErrorHandler.execute(req, res, error);

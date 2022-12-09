@@ -38,16 +38,14 @@ export class CreateOrderController {
       }
 
       const reqData = {
-        employeeId: req.body.employeeId,
+        clientId: req.body.clientId,
+        productIds: req.body.products,
         employeeToken: employeeTokenOrError.getValue()
       } as CreateOrderDTO;
 
       const order = await this.createOrderUseCase.execute(reqData);
-
-      const orderJSON = {
-        ...OrderMapper.toJSON(order),
-        products: []
-      }
+      
+      const orderJSON = OrderMapper.toJSON(order);
 
       res.json({order: orderJSON});
 

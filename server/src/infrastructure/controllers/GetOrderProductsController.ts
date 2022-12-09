@@ -46,7 +46,7 @@ export class GetOrderProductsController {
         return OrderProductMapper.toJSON(orderProduct);
       });
 
-      res.json({orderProducts: orderProductsJSON});
+      res.json({products: orderProductsJSON});
 
     }catch(error) {
       this.controllerErrorHandler.execute(req, res, error);

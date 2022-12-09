@@ -7,7 +7,7 @@ Content-Disposition: form-data; name="text"
 
 title
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="image"; filename=""
+Content-Disposition: form-data; name="image"; filename="dog.jpeg"
 Content-Type: image/jpg
 
 < ./images/dog.jpg

@@ -24,6 +24,7 @@ export { GetTempImageByIdController } from './controllers/GetTempImageByIdContro
 export { GetOrderProductsController } from './controllers/GetOrderProductsController';
 export { UpdateOrderController } from './controllers/UpdateOrderController';
 export { LoginEmployeeController } from './controllers/LoginEmployeeController';
+export { LogoutEmployeeController } from './controllers/LogoutEmployeeController';
 export { GetCurrentEmployeeController } from './controllers/GetCurrentEmployeeController';
 
 // ErrorHandlers

@@ -17,7 +17,7 @@ export class OrderRepository implements IOrderRepository {
   }
 
   public findMany = async (filter: any, skip: number, limit: number): Promise<Order[]> => {
-    const repoOrders = await this.model.find(filter).skip(skip).limit(limit);
+    const repoOrders = await this.model.find(filter).sort({"$natural": -1}).skip(skip).limit(limit);
     const orders = repoOrders.map((repoOrder)=> OrderMapper.toDomain(repoOrder));
     return orders;
   }

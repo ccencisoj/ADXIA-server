@@ -2,6 +2,7 @@ import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { LoginEmployeeUseCase } from "../../application";
 import { EmployeeMapper } from "../mappers/EmployeeMapper";
+import { setSessionEmployeeToken } from "../helpers/setSessionEmployeeToken";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 
 interface LoginEmployeeControllerDeps {
@@ -26,13 +27,15 @@ export class LoginEmployeeController {
   public execute = async (req: HttpRequest, res: HttpReponse): Promise<void> => {
     try {
       const reqData = {
-        nroDocument: req.body.nroDocument,
-        accessCode: req.body.accessCode
+        nroDocument: String(req.body.nroDocument),
+        accessCode: String(req.body.accessCode)
       }
 
       const { employee, employeeToken } = await this.loginEmployeeUseCase.execute(reqData);
 
       const employeeJSON = EmployeeMapper.toJSON(employee);
+
+      setSessionEmployeeToken(req, employeeToken);
 
       res.json({employee: employeeJSON, employeeToken});
 

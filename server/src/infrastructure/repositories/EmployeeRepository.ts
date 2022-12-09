@@ -17,7 +17,7 @@ export class EmployeeRepository implements IEmployeeRepository {
   }
 
   public findMany = async (filter: any, skip: number, limit: number): Promise<Employee[]> => {
-    const repoEmployees = await this.model.find(filter).skip(skip).limit(limit);
+    const repoEmployees = await this.model.find(filter).sort({"$natural": -1}).skip(skip).limit(limit);
     const employees = repoEmployees.map((repoEmployee)=> EmployeeMapper.toDomain(repoEmployee));
     return employees;
   }

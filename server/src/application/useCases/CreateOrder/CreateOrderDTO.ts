@@ -1,4 +1,5 @@
 export interface CreateOrderDTO {
-  employeeId: string;
+  clientId: string,
   employeeToken: string;
+  productIds: string[]
 }

@@ -12,40 +12,34 @@ Se debe proporcionar las siguientes entradas: name, brand, avaliableQuantity, pr
 
 ## Respuesta exitosa
 
+Realizamos la siguiente petición
 ```http
 POST http://localhost:4000/api/product
 Content-Type: application/json
 
 {
-  "name": "Producto 1",
+  "name": "Producto 4",
   "brand": "Nestle",
   "avaliableQuantity": 20,
   "price": 2500,
-  "imageURL": "http://localhost:4000/api/tempImage/ae8b2234-f673-4a4e-b7f0-0a2802c06d65"
+  "imageURL": "http://localhost:4000/api/tempImage/d006cdc0-77af-47dd-aff3-5eb66ecbc7df",
+  "description": "un producto",
+  "grammage": "x250"
 }
 ```
 
-## Respuesta mala
-
-Debe ingresar un nombre con longitud mayor a 2 caracteres. La siguiente petición arroja un error:
-
-```http
-POST http://localhost:4000/api/product
-Content-Type: application/json
-
+Obtenemos:
+```json
 {
-  "name": "a",
-}
-```
-
-Las entradas avaliableQuantity y price deben ser mayor o igual a 0. La siguiente petición arroja un error:
-
-```http
-POST http://localhost:4000/api/product
-Content-Type: application/json
-
-{
-  "avaliableQuantity": -4,
-  "price": -2
+  "product": {
+    "id": "bb0a5242-359d-42c1-88d9-d424a772f3ec",
+    "name": "Producto 4",
+    "brand": "Nestle",
+    "avaliableQuantity": 20,
+    "price": 2500,
+    "imageURL": "http://localhost:4000/api/tempImage/d006cdc0-77af-47dd-aff3-5eb66ecbc7df",
+    "description": "un producto",
+    "grammage": "x250"
+  }
 }
 ```

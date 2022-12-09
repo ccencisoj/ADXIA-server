@@ -1,8 +1,10 @@
 // @ts-nocheck
 import cors from 'cors';
 import mongoose from 'mongoose';
+import session from 'express-session';
 import express, { Router } from 'express';
 import { config } from './infrastructure';
+import MongoStore from 'connect-mongo';
 import {
   createClientController,
   createEmployeeController,
@@ -27,11 +29,13 @@ import {
   updateOrderController,
   getOrderProductsController,
   loginEmployeeController,
+  logoutEmployeeController,
   getCurrentEmployeeController
 } from './container';
 
 const PORT = config.PORT;
 const MONGO_URI = config.MONGO_URI;
+const SESSION_SECRET = config.SESSION_SECRET;
 
 (async ()=> {
   const server = express();
@@ -39,12 +43,21 @@ const MONGO_URI = config.MONGO_URI;
   const apiRouter = Router();
 
   // Middlewares
-  server.use(cors());
+  server.use(cors({
+    credentials: true,
+    origin: ["http://localhost:3000"]
+  }));
+
   server.use(express.json());
+  server.use(session({
+    resave: false,
+    saveUninitialized: false,
+    secret: SESSION_SECRET,
+    store: MongoStore.create({mongoUrl: MONGO_URI})
+  }));
 
   // Order Routes
   apiRouter.get(getOrdersController.route, getOrdersController.execute);
-
   apiRouter.post(createOrderController.route, createOrderController.execute);
   apiRouter.delete(deleteOrderController.route, deleteOrderController.execute);
   apiRouter.put(updateOrderController.route, updateOrderController.execute);
@@ -57,6 +70,7 @@ const MONGO_URI = config.MONGO_URI;
   apiRouter.delete(deleteEmployeeController.route, deleteEmployeeController.execute);
   apiRouter.put(updateEmployeeController.route, updateEmployeeController.execute);
   apiRouter.post(loginEmployeeController.route, loginEmployeeController.execute);
+  apiRouter.post(logoutEmployeeController.route, logoutEmployeeController.execute);
   apiRouter.get(getCurrentEmployeeController.route, getCurrentEmployeeController.execute);
   
   // Client Routes

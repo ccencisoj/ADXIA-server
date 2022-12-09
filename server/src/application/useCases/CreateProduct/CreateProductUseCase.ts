@@ -76,7 +76,9 @@ export class CreateProductUseCase {
       brand: brandOrError.getValue(),
       avaliableQuantity: avaliableQuantityOrError.getValue(),
       price: priceOrError.getValue(),
-      imageURL: req.imageURL
+      imageURL: req.imageURL,
+      description: req.description,
+      grammage: req.grammage
     });
 
     if(newProductOrError.isFailure) {

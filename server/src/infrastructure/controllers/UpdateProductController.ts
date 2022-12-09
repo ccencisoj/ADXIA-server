@@ -42,7 +42,9 @@ export class UpdateProductController {
         avaliableQuantity: req.body.avaliableQuantity,
         price: req.body.price,
         imageURL: req.body.imageURL,
-        employeeToken: employeeTokenOrError.getValue()
+        employeeToken: employeeTokenOrError.getValue(),
+        description: req.body.description,
+        grammage: req.body.grammage
       } as UpdateProductDTO;
 
       await this.updateProductUseCase.execute(reqData);

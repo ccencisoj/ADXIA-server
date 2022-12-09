@@ -43,7 +43,9 @@ export class CreateProductController {
         price: Number(req.body.price),
         address: req.body.address,
         imageURL: req.body.imageURL,
-        employeeToken: employeeTokenOrError.getValue()
+        employeeToken: employeeTokenOrError.getValue(),
+        description: req.body.description,
+        grammage: req.body.grammage
       } as CreateProductDTO;
 
       const product = await this.createProductUseCase.execute(reqData);

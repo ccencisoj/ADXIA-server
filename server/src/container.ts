@@ -87,6 +87,7 @@ import {
   UpdateOrderController,
   GetOrderProductsController,
   LoginEmployeeController,
+  LogoutEmployeeController,
   GetCurrentEmployeeController
 } from './infrastructure';
 
@@ -108,7 +109,7 @@ const hash = hashService.hash("123123");
 // UseCases
 const createClientUseCase = new CreateClientUseCase({clientRepository, employeeTokenService});
 const createEmployeeUseCase = new CreateEmployeeUseCase({employeeRepository, hashService, employeeTokenService});
-const createOrderUseCase = new CreateOrderUseCase({clientRepository, orderRepository, employeeTokenService});
+const createOrderUseCase = new CreateOrderUseCase({clientRepository, orderRepository, employeeTokenService, productRepository, orderProductRepository});
 const createProductUseCase = new CreateProductUseCase({productRepository, employeeTokenService});
 const deleteClientUseCase = new DeleteClientUseCase({clientRepository, employeeTokenService});
 const deleteEmployeeUseCase = new DeleteEmployeeUseCase({employeeRepository, employeeTokenService});
@@ -160,8 +161,8 @@ const getTempImageByIdController = new GetTempImageByIdController({getTempImageB
 const updateOrderController = new UpdateOrderController({updateOrderUseCase, controllerErrorHandler});
 const getOrderProductsController = new GetOrderProductsController({getOrderProductsUseCase, controllerErrorHandler});
 const loginEmployeeController = new LoginEmployeeController({loginEmployeeUseCase, controllerErrorHandler});
+const logoutEmployeeController = new LogoutEmployeeController({controllerErrorHandler});
 const getCurrentEmployeeController = new GetCurrentEmployeeController({getCurrentEmployeeUseCase, controllerErrorHandler});
-
 
 export {
   createClientController,
@@ -187,5 +188,6 @@ export {
   updateOrderController,
   getOrderProductsController,
   loginEmployeeController,
+  logoutEmployeeController,
   getCurrentEmployeeController
 };

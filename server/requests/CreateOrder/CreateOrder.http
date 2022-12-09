@@ -2,5 +2,10 @@ POST http://localhost:4000/api/order
 Content-Type: application/json
 
 {
-  "employeeId": "123"
+  "clientId": "7624cba9-aa07-4d14-a2b4-014467f167b0",
+  "products": [
+    "5d7b08a6-1fbc-4899-b770-206e83b466bb",
+    "5d7b08a6-1fbc-4899-b770-206e83b466bb"
+  ]
 }
+ 

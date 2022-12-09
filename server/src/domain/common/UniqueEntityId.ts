@@ -15,7 +15,7 @@ export class UniqueEntityId extends ValueObject<UniqueEntityIdProps> {
     super({value: props.value ? props.value : uuidv4()});
   }
 
-  public create = (value?: string)=> {
+  public static create = (value?: string)=> {
     return new UniqueEntityId({value});
   }
 }
