@@ -1,30 +1,28 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
 import { OrderMapper } from "../mappers/OrderMapper";
+import { ClientMapper } from "../mappers/ClientMapper";
 import { getEmployeeToken } from "../helpers/getEmployeeToken";
 import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
-import {
-  GetOrdersDTO, 
-  GetOrdersUseCase
-} from "../../application";
+import { GetOrdersClientsDTO, GetOrdersClientsUseCase } from "../../application"
 
-interface GetOrdersControllerDeps {
-  getOrdersUseCase: GetOrdersUseCase;
+interface GetOrdersClientsControllerDeps {
+  getOrdersClientsUseCase: GetOrdersClientsUseCase;
   controllerErrorHandler: ControllerErrorHandler;
 }
 
-export class GetOrdersController {
-  public readonly route = "/orders";
+export class GetOrdersClientsController {
+  public readonly route = "/orders/clients";
 
-  protected readonly getOrdersUseCase: GetOrdersUseCase;
+  protected readonly getOrdersClientsUseCase: GetOrdersClientsUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
   public constructor({
-    getOrdersUseCase,
+    getOrdersClientsUseCase, 
     controllerErrorHandler
-  }: GetOrdersControllerDeps) {
-    this.getOrdersUseCase = getOrdersUseCase;
+  }: GetOrdersClientsControllerDeps) {
+    this.getOrdersClientsUseCase = getOrdersClientsUseCase;
     this.controllerErrorHandler = controllerErrorHandler;
   }
 
@@ -39,15 +37,21 @@ export class GetOrdersController {
       const reqData = {
         skip: Number(req.query.skip),
         limit: Number(req.query.limit),
-        searchValue: req.query.search,
         employeeToken: employeeTokenOrError.getValue()
-      } as GetOrdersDTO;
+      } as GetOrdersClientsDTO;
 
-      const orders = await this.getOrdersUseCase.execute(reqData);
-      
-      const ordersJSON = orders.map((order)=> OrderMapper.toJSON(order));
+      const ordersClients = await this.getOrdersClientsUseCase.execute(reqData);
 
-      res.json({orders: ordersJSON});
+      let clients = [];
+
+      for(let orderClient of ordersClients) {
+        const client = ClientMapper.toJSON(orderClient.client);
+        const order = orderClient.order ? OrderMapper.toJSON(orderClient.order) : null;
+
+        clients.push({...client, order});
+      }
+
+      res.json({clients: clients});
 
     }catch(error) {
       this.controllerErrorHandler.execute(req, res, error);

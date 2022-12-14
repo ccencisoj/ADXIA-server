@@ -34,12 +34,28 @@ export class GetClientsUseCase {
     const decodedEmployee = decodedEmployeeOrError.getValue();
 
     if(!(decodedEmployee.type === EmployeeType.ADMIN ||
-      decodedEmployee.type === EmployeeType.ADMIN ||
+      decodedEmployee.type === EmployeeType.VENDOR ||
       decodedEmployee.type === EmployeeType.DELIVERER)) {
       throw new EmployeeActionNoAllowedException();
     }
 
-    const clients = await this.clientRepository.findMany({}, req.skip, req.limit);
+    let clients;
+
+    if(req.searchValue) {
+      clients = await this.clientRepository.findMany({
+        $or: [
+          {name: {$regex: `.*${req.searchValue}.*`, $options: "i"}}, 
+          {surname: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {nroDocument: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {phoneNumber: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {address: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {business: {$regex: `.*${req.searchValue}.*`, $options: "i"}}
+        ]
+      }, req.skip, req.limit);
+
+    }else {
+      clients = await this.clientRepository.findMany({}, req.skip, req.limit);
+    }
     
     return clients;
   }  

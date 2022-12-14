@@ -9,9 +9,10 @@ import {
 type OrderProductRaw = {
   id: string;
   orderId: string;
+  productId: string;
   name: string;
   brand: string;
-  avaliableQuantity: number;
+  quantity: number;
   price: number;
   imageURL: string;
   description: string;
@@ -23,9 +24,10 @@ export class OrderProductMapper {
     return {
       id: orderProduct.id,
       orderId: orderProduct.orderId,
+      productId: orderProduct.productId,
       name: orderProduct.name,
       brand: orderProduct.brand,
-      avaliableQuantity: orderProduct.avaliableQuantity,
+      quantity: orderProduct.quantity,
       price: orderProduct.price,
       imageURL: orderProduct.imageURL,
       description: orderProduct.description,
@@ -37,12 +39,13 @@ export class OrderProductMapper {
     return {
       id: orderProduct.id,
       orderId: orderProduct.orderId,
+      productId: orderProduct.productId,
       name: orderProduct.name,
       brand: orderProduct.brand,
-      avaliableQuantity: orderProduct.avaliableQuantity,
+      quantity: orderProduct.quantity,
       price: orderProduct.price,
       imageURL: orderProduct.imageURL,
-      escription: orderProduct.description,
+      description: orderProduct.description,
       grammage: orderProduct.grammage
     }
   }
@@ -50,13 +53,14 @@ export class OrderProductMapper {
   public static toDomain = (raw: OrderProductRaw): OrderProduct => {
     const nameOrError = ProductName.create(raw.name);
     const brandOrError = ProductBrand.create(raw.brand);
-    const avaliableQuantityOrError = ProductQuantity.create(raw.avaliableQuantity);
+    const quantityOrError = ProductQuantity.create(raw.quantity);
     const priceOrError = ProductPrice.create(raw.price);
     const orderProductOrError = OrderProduct.create({
       orderId: raw.orderId,
+      productId: raw.productId,
       name: nameOrError.getValue(),
       brand: brandOrError.getValue(),
-      avaliableQuantity: avaliableQuantityOrError.getValue(),
+      quantity: quantityOrError.getValue(),
       price: priceOrError.getValue(),
       imageURL: raw.imageURL,
       description: raw.description,

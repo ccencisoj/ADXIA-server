@@ -5,26 +5,26 @@ import { getEmployeeToken } from "../helpers/getEmployeeToken";
 import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
-  GetOrdersDTO, 
-  GetOrdersUseCase
+  GetOrderByIdDTO, 
+  GetOrderByIdUseCase
 } from "../../application";
 
-interface GetOrdersControllerDeps {
-  getOrdersUseCase: GetOrdersUseCase;
+interface GetOrderByIdControllerDeps {
+  getOrderByIdUseCase: GetOrderByIdUseCase;
   controllerErrorHandler: ControllerErrorHandler;
 }
 
-export class GetOrdersController {
-  public readonly route = "/orders";
+export class GetOrderByIdController {
+  public readonly route = "/order";
 
-  protected readonly getOrdersUseCase: GetOrdersUseCase;
+  protected readonly getOrderByIdUseCase: GetOrderByIdUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
   public constructor({
-    getOrdersUseCase,
+    getOrderByIdUseCase,
     controllerErrorHandler
-  }: GetOrdersControllerDeps) {
-    this.getOrdersUseCase = getOrdersUseCase;
+  }: GetOrderByIdControllerDeps) {
+    this.getOrderByIdUseCase = getOrderByIdUseCase;
     this.controllerErrorHandler = controllerErrorHandler;
   }
 
@@ -37,17 +37,15 @@ export class GetOrdersController {
       }
 
       const reqData = {
-        skip: Number(req.query.skip),
-        limit: Number(req.query.limit),
-        searchValue: req.query.search,
+        orderId: req.query.orderId,
         employeeToken: employeeTokenOrError.getValue()
-      } as GetOrdersDTO;
+      } as GetOrderByIdDTO;
 
-      const orders = await this.getOrdersUseCase.execute(reqData);
-      
-      const ordersJSON = orders.map((order)=> OrderMapper.toJSON(order));
+      const order = await this.getOrderByIdUseCase.execute(reqData);
 
-      res.json({orders: ordersJSON});
+      const orderJSON = OrderMapper.toJSON(order);
+
+      res.json({order: orderJSON});
 
     }catch(error) {
       this.controllerErrorHandler.execute(req, res, error);

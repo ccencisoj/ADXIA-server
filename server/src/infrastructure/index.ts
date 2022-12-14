@@ -26,6 +26,9 @@ export { UpdateOrderController } from './controllers/UpdateOrderController';
 export { LoginEmployeeController } from './controllers/LoginEmployeeController';
 export { LogoutEmployeeController } from './controllers/LogoutEmployeeController';
 export { GetCurrentEmployeeController } from './controllers/GetCurrentEmployeeController';
+export { GetProductByIdController } from './controllers/GetProductByIdController';
+export { GetOrdersClientsController } from './controllers/GetOrdersClientsController';
+export { GetOrderByIdController } from './controllers/GetOrderByIdController';
 
 // ErrorHandlers
 export { ControllerErrorHandler } from './errorHandlers/ControllerErrorHandler';

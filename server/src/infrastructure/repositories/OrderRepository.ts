@@ -11,13 +11,13 @@ export class OrderRepository implements IOrderRepository {
   }
 
   public findOne = async (filter: any): Promise<Order> => {
-    const repoOrder = await this.model.findOne(filter);    
+    const repoOrder = await this.model.findOne({...filter, deleted: false});    
     const order = repoOrder ? OrderMapper.toDomain(repoOrder) : null;
     return order;
   }
 
   public findMany = async (filter: any, skip: number, limit: number): Promise<Order[]> => {
-    const repoOrders = await this.model.find(filter).sort({"$natural": -1}).skip(skip).limit(limit);
+    const repoOrders = await this.model.find({...filter, deleted: false}).sort({"$natural": -1}).skip(skip).limit(limit);
     const orders = repoOrders.map((repoOrder)=> OrderMapper.toDomain(repoOrder));
     return orders;
   }
@@ -29,12 +29,16 @@ export class OrderRepository implements IOrderRepository {
     if(exists) {
       await this.model.updateOne({id: repoOrder.id}, repoOrder);
     }else {
-      await this.model.create(repoOrder);
+      await this.model.create({...repoOrder, deleted: false});
     }
   }
 
   public delete = async (Order: Order): Promise<void> => {
-    await this.model.deleteOne({id: Order.id}); 
+    await this.model.updateOne({id: Order.id}, {deleted: true}); 
+  }
+
+  public deleteMany = async (filter: any): Promise<void> => {
+    await this.model.updateMany(filter, {deleted: true});
   }
 
   public existsById = async (entityId: string): Promise<boolean> => {

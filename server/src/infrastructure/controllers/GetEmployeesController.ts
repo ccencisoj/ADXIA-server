@@ -39,14 +39,15 @@ export class GetEmployeesController {
       const reqData = {
         skip: Number(req.query.skip),
         limit: Number(req.query.limit),
+        searchValue: req.query.search,
         employeeToken: employeeTokenOrError.getValue()
       } as GetEmployeesDTO;
 
       const employees = await this.getEmployeesUseCase.execute(reqData);
       
-      const employeeJSON = employees.map((employee)=> EmployeeMapper.toJSON(employee));
+      const employeesJSON = employees.map((employee)=> EmployeeMapper.toJSON(employee));
 
-      res.json({employees: employeeJSON});
+      res.json({employees: employeesJSON});
 
     }catch(error) {
       this.controllerErrorHandler.execute(req, res, error);

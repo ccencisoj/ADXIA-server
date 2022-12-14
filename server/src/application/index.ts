@@ -123,3 +123,15 @@ export { LoginEmployeeUseCase } from './useCases/LoginEmployee/LoginEmployeeUseC
 // GetCurrentEmployee
 export { GetCurrentEmployeeDTO } from './useCases/GetCurrentEmployee/GetCurrentEmployeeDTO';
 export { GetCurrentEmployeeUseCase } from './useCases/GetCurrentEmployee/GetCurrentEmployeeUseCase';
+
+// GetProductById
+export { GetProductByIdDTO } from './useCases/GetProductById/GetProductByIdDTO';
+export { GetProductByIdUseCase } from './useCases/GetProductById/GetProductByIdUseCase';
+
+// GetOrdersClients
+export { GetOrdersClientsDTO } from './useCases/GetOrdersClients/GetOrdersClientsDTO';
+export { GetOrdersClientsUseCase } from './useCases/GetOrdersClients/GetOrdersClientsUseCase';
+
+// GetOrderById
+export { GetOrderByIdDTO } from './useCases/GetOrderById/GetOrderByIdDTO';
+export { GetOrderByIdUseCase } from './useCases/GetOrderById/GetOrderByIdUseCase';

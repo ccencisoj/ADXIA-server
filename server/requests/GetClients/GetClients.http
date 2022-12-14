@@ -1,1 +1,1 @@
-GET http://localhost:4000/api/clients
+GET http://localhost:4000/api/clients?search=

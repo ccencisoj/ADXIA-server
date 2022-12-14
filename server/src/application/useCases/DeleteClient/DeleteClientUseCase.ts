@@ -1,8 +1,9 @@
 import { DeleteClientDTO } from './DeleteClientDTO';
+import { IOrderRepository } from '../../repositories/IOrderRepository';
 import { IClientRepository } from '../../repositories/IClientRepository';
 import { IEmployeeTokenService } from '../../services/IEmployeeTokenService';
 import { ClientNoFoundException } from '../../exceptions/ClientNoFoundException';
-import { DeletedClientEvent, DomainEvents, EmployeeType } from '../../../domain';
+import { DeletedClientEvent, EmployeeType } from '../../../domain';
 import { EmployeeCredentialsException } from '../../exceptions/EmployeeCredentialsException';
 import { EmployeeActionNoAllowedException } from '../../exceptions/EmployeeActionNoAllowedException';
 
@@ -10,19 +11,23 @@ type Response = Promise<void>;
 
 interface DeleteClientUseCaseDeps {
   clientRepository: IClientRepository;
+  orderRepository: IOrderRepository;
   employeeTokenService: IEmployeeTokenService;
 }
 
 export class DeleteClientUseCase {
   protected readonly clientRepository: IClientRepository;
   protected readonly employeeTokenService: IEmployeeTokenService;
+  protected readonly orderRepository: IOrderRepository;
 
   public constructor({
     clientRepository,
-    employeeTokenService
+    employeeTokenService,
+    orderRepository
   }: DeleteClientUseCaseDeps) {
     this.clientRepository = clientRepository;
     this.employeeTokenService = employeeTokenService;
+    this.orderRepository = orderRepository;
   }
 
   public execute = async (req: DeleteClientDTO): Response => {
@@ -50,6 +55,6 @@ export class DeleteClientUseCase {
 
     client.addDomainEvent(new DeletedClientEvent(client));
 
-    DomainEvents.dispatchEvents(client);
+    await this.orderRepository.deleteMany({clientId: client.id});
   }
 }

@@ -9,6 +9,7 @@ const ClientSchema = new Schema({
   address: {type: String, required: true},
   imageURL: {type: String, required: true},
   business: {type: String, required: true},
+  deleted: {type: Boolean, required: true}
 });
 
 const ClientModel = model("Client", ClientSchema);

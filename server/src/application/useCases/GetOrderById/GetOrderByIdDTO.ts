@@ -1,4 +1,4 @@
-export interface DeleteOrderDTO {
+export interface GetOrderByIdDTO {
   orderId: string;
   employeeToken: string;
 }

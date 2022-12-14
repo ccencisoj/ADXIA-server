@@ -35,7 +35,7 @@ export class UpdateOrderController {
       const reqData = {
         orderId: req.query.orderId,
         clientId: req.body.clientId,
-        productIds: req.body.products,
+        products: req.body.products,
         employeeToken: employeeTokenOrError.getValue()
       } as UpdateOrderDTO;
 

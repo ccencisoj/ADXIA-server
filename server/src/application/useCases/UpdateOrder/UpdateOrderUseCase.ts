@@ -7,8 +7,10 @@ import { OrderProductException } from "../../exceptions/OrderProductException";
 import { IOrderProductRepository } from "../../repositories/IOrderProductRepository";
 import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
 import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
-import { EmployeeType, Order, OrderProduct, ProductBrand, ProductName, ProductPrice, ProductQuantity } from "../../../domain";
+import { EmployeeType, Order, OrderProduct, Product, ProductBrand, ProductName, ProductPrice, ProductQuantity, Result } from "../../../domain";
 import { OrderException } from "../../exceptions/OrderException";
+import { ValidationException } from "../../exceptions/ValidationException";
+import { ProductException } from "../../exceptions/ProductException";
 
 type Response = Promise<void>;
 
@@ -58,24 +60,67 @@ export class UpdateOrderUseCase {
       throw new OrderNoFoundException();
     }
 
-    await this.orderProductRepository.deleteMany({id: order.id});
+    const orderProducts = await this.orderProductRepository.findMany({orderId: order.id});
 
-    let total = 0;
-
-    for(let productId of req.productIds) {
-      const product = await this.productRepository.findOne({id: productId});
+    for(let orderProduct of orderProducts) {
+      const product = await this.productRepository.findOne({id: orderProduct.productId});
       const productFound = !!product;
 
       if(productFound) {
         const nameOrError = ProductName.create(product.name);
         const brandOrError = ProductBrand.create(product.brand);
-        const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity);
+        const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity + orderProduct.quantity);
         const priceOrError = ProductPrice.create(product.price);
-        const orderProductOrError = OrderProduct.create({
-          orderId: order.id,
+        const combinedResult = Result.combine([
+          nameOrError,
+          brandOrError,
+          avaliableQuantityOrError,
+          priceOrError
+        ]);
+
+        if(combinedResult.isFailure) {
+          throw new ValidationException(combinedResult.getError() as string);
+        }
+
+        const updatedProductOrError = Product.create({
           name: nameOrError.getValue(),
           brand: brandOrError.getValue(),
           avaliableQuantity: avaliableQuantityOrError.getValue(),
+          price: priceOrError.getValue(),
+          imageURL: product.imageURL,
+          description: product.description,
+          grammage: product.grammage
+        }, product.id);
+    
+        if(updatedProductOrError.isFailure) {
+          throw new ProductException(updatedProductOrError.getError() as string);
+        }
+    
+        const updatedProduct = updatedProductOrError.getValue();
+    
+        await this.orderProductRepository.delete(orderProduct);
+        
+        await this.productRepository.save(updatedProduct);
+      }
+    }
+
+    let total = 0;
+
+    for(let reqProduct of req.products) {
+      const product = await this.productRepository.findOne({id: reqProduct.productId});
+      const productFound = !!product;
+
+      if(productFound && (product.avaliableQuantity - reqProduct.quantity) >= 0) {
+        const nameOrError = ProductName.create(product.name);
+        const brandOrError = ProductBrand.create(product.brand);
+        const quantityOrError = ProductQuantity.create(reqProduct.quantity);
+        const priceOrError = ProductPrice.create(product.price);
+        const orderProductOrError = OrderProduct.create({
+          orderId: order.id,
+          productId: product.id,
+          name: nameOrError.getValue(),
+          brand: brandOrError.getValue(),
+          quantity: quantityOrError.getValue(),
           price: priceOrError.getValue(),
           imageURL: product.imageURL,
           description: product.description,
@@ -90,14 +135,14 @@ export class UpdateOrderUseCase {
 
         await this.orderProductRepository.save(orderProduct);
 
-        total += orderProduct.price;
+        total += (orderProduct.price * reqProduct.quantity);
       }
     }
 
     const updatedOrderOrError = Order.create({
       createdAt: order.createdAt,
       employeeId: order.employeeId,
-      clientId: order.clientId,
+      clientId: req.clientId,
       deliveredAt: order.deliveredAt,
       total: total
     }, order.id);
@@ -109,5 +154,45 @@ export class UpdateOrderUseCase {
     const updatedOrder = updatedOrderOrError.getValue();
 
     await this.orderRepository.save(updatedOrder);
+
+    for(let reqProduct of req.products) {
+      const product = await this.productRepository.findOne({id: reqProduct.productId});
+      const productFound = !!product;
+
+      if(productFound) {
+        const nameOrError = ProductName.create(product.name);
+        const brandOrError = ProductBrand.create(product.brand);
+        const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity - reqProduct.quantity);
+        const priceOrError = ProductPrice.create(product.price);
+        const combinedResult = Result.combine([
+          nameOrError,
+          brandOrError,
+          avaliableQuantityOrError,
+          priceOrError
+        ]);
+
+        if(combinedResult.isFailure) {
+          throw new ValidationException(combinedResult.getError() as string);
+        }
+
+        const updatedProductOrError = Product.create({
+          name: nameOrError.getValue(),
+          brand: brandOrError.getValue(),
+          avaliableQuantity: avaliableQuantityOrError.getValue(),
+          price: priceOrError.getValue(),
+          imageURL: product.imageURL,
+          description: product.description,
+          grammage: product.grammage
+        }, product.id);
+    
+        if(updatedProductOrError.isFailure) {
+          throw new ProductException(updatedProductOrError.getError() as string);
+        }
+    
+        const updatedProduct = updatedProductOrError.getValue();
+    
+        await this.productRepository.save(updatedProduct);        
+      }
+    }
   }
 }

@@ -1,30 +1,31 @@
-import { GetProductsDTO } from "./GetProductsDTO";
 import { EmployeeType, Product } from "../../../domain";
+import { GetProductByIdDTO } from "./GetProductByIdDTO";
 import { IProductRepository } from "../../repositories/IProductRepository";
 import { IEmployeeTokenService } from "../../services/IEmployeeTokenService";
+import { ProductNoFoundException } from "../../exceptions/ProductNoFoundException";
 import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
 import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
 
-type Response = Promise<Product[]>;
+type Response = Promise<Product>;
 
-interface GetProductsUseCaseDeps {
+interface GetProductByIdUseCaseDeps {
   productRepository: IProductRepository;
   employeeTokenService: IEmployeeTokenService;
 }
 
-export class GetProductsUseCase {
+export class GetProductByIdUseCase {
   protected readonly productRepository: IProductRepository;
   protected readonly employeeTokenService: IEmployeeTokenService;
 
   public constructor({
     productRepository,
     employeeTokenService
-  }: GetProductsUseCaseDeps) {
+  }: GetProductByIdUseCaseDeps) {
     this.productRepository = productRepository;
     this.employeeTokenService = employeeTokenService;
   }
 
-  public execute = async (req: GetProductsDTO): Response => {
+  public execute = async (req: GetProductByIdDTO): Response => {
     const decodedEmployeeOrError = this.employeeTokenService.decode(req.employeeToken);
 
     if(decodedEmployeeOrError.isFailure) {
@@ -33,26 +34,19 @@ export class GetProductsUseCase {
 
     const decodedEmployee = decodedEmployeeOrError.getValue();
 
-    if(!(decodedEmployee.type === EmployeeType.ADMIN || 
-      decodedEmployee.type === EmployeeType.VENDOR ||
+    if(!(decodedEmployee.type === EmployeeType.ADMIN ||
+      decodedEmployee.type === EmployeeType.ADMIN ||
       decodedEmployee.type === EmployeeType.DELIVERER)) {
       throw new EmployeeActionNoAllowedException();
     }
 
-    let products;
-    
-    if(req.searchValue) {
-      products = await this.productRepository.findMany({
-        $or: [
-          {name: {$regex: `.*${req.searchValue}.*`, $options: "i"}}, 
-          {brand: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
-        ]
-      }, req.skip, req.limit);
+    const product = await this.productRepository.findOne({id: req.productId});
+    const productFound = !!product;
 
-    }else {
-      products = await this.productRepository.findMany({}, req.skip, req.limit);
+    if(!productFound) {
+      throw new ProductNoFoundException();
     }
 
-    return products;
+    return product;
   }
-} 
+}

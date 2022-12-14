@@ -11,13 +11,13 @@ export class ClientRepository implements IClientRepository {
   }
 
   public findOne = async (filter: any): Promise<Client> => {
-    const repoClient = await this.model.findOne(filter);    
+    const repoClient = await this.model.findOne({...filter, deleted: false});    
     const client = repoClient ? ClientMapper.toDomain(repoClient) : null;
     return client;
   }
 
   public findMany = async (filter: any, skip: number, limit: number): Promise<Client[]> => {
-    const repoClients = await this.model.find(filter).sort({"$natural": -1}).skip(skip).limit(limit);
+    const repoClients = await this.model.find({...filter, deleted: false}).sort({"$natural": -1}).skip(skip).limit(limit);
     const clients = repoClients.map((repoClient)=> ClientMapper.toDomain(repoClient));
     return clients;
   }
@@ -29,12 +29,16 @@ export class ClientRepository implements IClientRepository {
     if(exists) {
       await this.model.updateOne({id: repoClient.id}, repoClient);
     }else {
-      await this.model.create(repoClient);
+      await this.model.create({...repoClient, deleted: false});
     }
   }
 
   public delete = async (client: Client): Promise<void> => {
-    await this.model.deleteOne({id: client.id}); 
+    await this.model.updateOne({id: client.id}, {deleted: true}); 
+  }
+
+  public deleteMany = async (filter: any): Promise<void> => {
+    await this.model.updateMany(filter, {deleted: true});
   }
 
   public existsById = async (entityId: string): Promise<boolean> => {

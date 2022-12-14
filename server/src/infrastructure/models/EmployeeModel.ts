@@ -10,7 +10,8 @@ const EmployeeSchema = new Schema({
   imageURL: {type: String, required: true},
   type: {type: String, required: true},
   phone: {type: String, required: true},
-  accessCode: {type: String, required: true}
+  accessCode: {type: String, required: true},
+  deleted: {type: Boolean, required: true}
 });
 
 const EmployeeModel = model("Employee", EmployeeSchema);

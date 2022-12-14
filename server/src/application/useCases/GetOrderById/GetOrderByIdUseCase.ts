@@ -1,36 +1,31 @@
-import { EmployeeType, OrderProduct } from "../../../domain";
-import { GetOrderProductsDTO } from "./GetOrderProductsDTO";
+import { GetOrderByIdDTO } from "./GetOrderByIdDTO";
+import { EmployeeType, Order } from "../../../domain";
 import { IOrderRepository } from "../../repositories/IOrderRepository";
-import { OrderNoFoundException } from "../../exceptions/OrderNoFoundException";
 import { IEmployeeTokenService } from "../../services/IEmployeeTokenService";
-import { IOrderProductRepository } from "../../repositories/IOrderProductRepository";
+import { OrderNoFoundException } from "../../exceptions/OrderNoFoundException";
 import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
 import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
 
-type Response = Promise<OrderProduct[]>;
+type Response = Promise<Order>;
 
-interface GetOrderProductsUseCaseDeps {
+interface GetOrderByIdUseCaseDeps {
   orderRepository: IOrderRepository;
-  orderProductRepository: IOrderProductRepository;
   employeeTokenService: IEmployeeTokenService;
 }
 
-export class GetOrderProductsUseCase {
+export class GetOrderByIdUseCase {
   protected readonly orderRepository: IOrderRepository;
-  protected readonly orderProductRepository: IOrderProductRepository;
   protected readonly employeeTokenService: IEmployeeTokenService;
 
   public constructor({
-    orderRepository, 
-    orderProductRepository,
+    orderRepository,
     employeeTokenService
-  }: GetOrderProductsUseCaseDeps) {
+  }: GetOrderByIdUseCaseDeps) {
     this.orderRepository = orderRepository;
-    this.orderProductRepository = orderProductRepository;
     this.employeeTokenService = employeeTokenService;
   }
 
-  public execute = async (req: GetOrderProductsDTO): Response => {
+  public execute = async (req: GetOrderByIdDTO): Response => {
     const decodedEmployeeOrError = this.employeeTokenService.decode(req.employeeToken);
 
     if(decodedEmployeeOrError.isFailure) {
@@ -39,8 +34,8 @@ export class GetOrderProductsUseCase {
 
     const decodedEmployee = decodedEmployeeOrError.getValue();
 
-    if(!(decodedEmployee.type === EmployeeType.ADMIN || 
-      decodedEmployee.type === EmployeeType.VENDOR ||
+    if(!(decodedEmployee.type === EmployeeType.ADMIN ||
+      decodedEmployee.type === EmployeeType.ADMIN ||
       decodedEmployee.type === EmployeeType.DELIVERER)) {
       throw new EmployeeActionNoAllowedException();
     }
@@ -52,8 +47,6 @@ export class GetOrderProductsUseCase {
       throw new OrderNoFoundException();
     }
 
-    const orderProducts = await this.orderProductRepository.findMany({orderId: order.id}, req.skip, req.limit);
-
-    return orderProducts;
+    return order;
   }
 }

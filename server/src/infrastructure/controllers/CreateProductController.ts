@@ -41,7 +41,6 @@ export class CreateProductController {
         brand: req.body.brand,
         avaliableQuantity: Number(req.body.avaliableQuantity),
         price: Number(req.body.price),
-        address: req.body.address,
         imageURL: req.body.imageURL,
         employeeToken: employeeTokenOrError.getValue(),
         description: req.body.description,

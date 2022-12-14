@@ -7,9 +7,10 @@ import { AggregateRoot } from "./common/AggregateRoot";
 
 interface OrderProductProps {
   orderId: string;
+  productId: string;
   name: ProductName;
   brand: ProductBrand;
-  avaliableQuantity: ProductQuantity;
+  quantity: ProductQuantity;
   price: ProductPrice;
   imageURL: string;
   description: string;
@@ -25,6 +26,10 @@ export class OrderProduct extends AggregateRoot<OrderProductProps> {
     return this.props.orderId;
   }
 
+  public get productId(): string {
+    return this.props.productId;
+  }
+
   public get name(): string {
     return this.props.name.value;
   }
@@ -33,8 +38,8 @@ export class OrderProduct extends AggregateRoot<OrderProductProps> {
     return this.props.brand.value;
   }
 
-  public get avaliableQuantity(): number {
-    return this.props.avaliableQuantity.value;
+  public get quantity(): number {
+    return this.props.quantity.value;
   }
 
   public get price(): number {

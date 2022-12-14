@@ -22,7 +22,10 @@ import {
   UpdateOrderUseCase,
   GetOrderProductsUseCase,
   LoginEmployeeUseCase,
-  GetCurrentEmployeeUseCase
+  GetCurrentEmployeeUseCase,
+  GetProductByIdUseCase,
+  GetOrdersClientsUseCase,
+  GetOrderByIdUseCase
 } from './application';
 
 // Import Models
@@ -88,7 +91,10 @@ import {
   GetOrderProductsController,
   LoginEmployeeController,
   LogoutEmployeeController,
-  GetCurrentEmployeeController
+  GetCurrentEmployeeController,
+  GetProductByIdController,
+  GetOrdersClientsController,
+  GetOrderByIdController
 } from './infrastructure';
 
 // Repositories
@@ -104,22 +110,20 @@ const imageService = new ImageService({tempImageRepository});
 const hashService = new HashService();
 const employeeTokenService = new EmployeeTokenService();
 
-const hash = hashService.hash("123123");
-
 // UseCases
 const createClientUseCase = new CreateClientUseCase({clientRepository, employeeTokenService});
 const createEmployeeUseCase = new CreateEmployeeUseCase({employeeRepository, hashService, employeeTokenService});
 const createOrderUseCase = new CreateOrderUseCase({clientRepository, orderRepository, employeeTokenService, productRepository, orderProductRepository});
 const createProductUseCase = new CreateProductUseCase({productRepository, employeeTokenService});
-const deleteClientUseCase = new DeleteClientUseCase({clientRepository, employeeTokenService});
+const deleteClientUseCase = new DeleteClientUseCase({clientRepository, employeeTokenService, orderRepository});
 const deleteEmployeeUseCase = new DeleteEmployeeUseCase({employeeRepository, employeeTokenService});
-const deleteOrderUseCase = new DeleteOrderUseCase({clientRepository, orderRepository, employeeTokenService});
+const deleteOrderUseCase = new DeleteOrderUseCase({clientRepository, orderRepository, employeeTokenService, orderProductRepository, productRepository});
 const deleteProductUseCase = new DeleteProductUseCase({productRepository, employeeTokenService});
 const getClientByIdUseCase = new GetClientByIdUseCase({clientRepository, employeeTokenService});
 const getClientsUseCase = new GetClientsUseCase({clientRepository, employeeTokenService});
 const getEmployeeByIdUseCase = new GetEmployeeByIdUseCase({employeeRepository, employeeTokenService});
 const getEmployeesUseCase = new GetEmployeesUseCase({employeeRepository, employeeTokenService});
-const getOrdersUseCase = new GetOrdersUseCase({orderRepository, employeeTokenService});
+const getOrdersUseCase = new GetOrdersUseCase({orderRepository, employeeTokenService, clientRepository});
 const getProductsUseCase = new GetProductsUseCase({productRepository, employeeTokenService});
 const updateClientUseCase = new UpdateClientUseCase({clientRepository, employeeTokenService});
 const updateEmployeeUseCase = new UpdateEmployeeUseCase({employeeRepository, hashService, employeeTokenService});
@@ -130,6 +134,9 @@ const updateOrderUseCase = new UpdateOrderUseCase({orderRepository, orderProduct
 const getOrderProductsUseCase = new GetOrderProductsUseCase({orderRepository, orderProductRepository, employeeTokenService});
 const loginEmployeeUseCase = new LoginEmployeeUseCase({employeeRepository, hashService, employeeTokenService});
 const getCurrentEmployeeUseCase = new GetCurrentEmployeeUseCase({employeeRepository, employeeTokenService});
+const getProductByIdUseCase = new GetProductByIdUseCase({employeeTokenService, productRepository});
+const getOrdersClientsUseCase = new GetOrdersClientsUseCase({orderRepository, clientRepository, employeeTokenService});
+const getOrderByIdUseCase = new GetOrderByIdUseCase({employeeTokenService, orderRepository});
 
 // Error Handlers
 const controllerErrorHandler = new ControllerErrorHandler();
@@ -163,6 +170,9 @@ const getOrderProductsController = new GetOrderProductsController({getOrderProdu
 const loginEmployeeController = new LoginEmployeeController({loginEmployeeUseCase, controllerErrorHandler});
 const logoutEmployeeController = new LogoutEmployeeController({controllerErrorHandler});
 const getCurrentEmployeeController = new GetCurrentEmployeeController({getCurrentEmployeeUseCase, controllerErrorHandler});
+const getProductByIdController = new GetProductByIdController({controllerErrorHandler, getProductByIdUseCase});
+const getOrdersClientsController = new GetOrdersClientsController({controllerErrorHandler, getOrdersClientsUseCase});
+const getOrderByIdController = new GetOrderByIdController({controllerErrorHandler, getOrderByIdUseCase});
 
 export {
   createClientController,
@@ -189,5 +199,8 @@ export {
   getOrderProductsController,
   loginEmployeeController,
   logoutEmployeeController,
-  getCurrentEmployeeController
+  getCurrentEmployeeController,
+  getProductByIdController,
+  getOrdersClientsController,
+  getOrderByIdController
 };

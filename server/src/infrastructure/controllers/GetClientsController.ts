@@ -39,6 +39,7 @@ export class GetClientsController {
       const reqData = {
         skip: Number(req.query.skip),
         limit: Number(req.query.limit),
+        searchValue: req.query.search,
         employeeToken: employeeTokenOrError.getValue()
       } as GetClientsDTO;
 

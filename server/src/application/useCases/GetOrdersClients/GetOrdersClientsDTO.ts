@@ -1,6 +1,5 @@
-export interface GetEmployeesDTO {
+export interface GetOrdersClientsDTO {
   skip: number;
   limit: number;
-  searchValue: string;
   employeeToken: string;
 }

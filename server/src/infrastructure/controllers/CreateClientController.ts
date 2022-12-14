@@ -39,7 +39,7 @@ export class CreateClientController {
       const reqData = {
         name: req.body.name,
         surname: req.body.surname,
-        nroDocument: req.body.nroDocument,
+        nroDocument: String(req.body.nroDocument),
         phoneNumber: req.body.phoneNumber,
         address: req.body.address,
         imageURL: req.body.imageURL,

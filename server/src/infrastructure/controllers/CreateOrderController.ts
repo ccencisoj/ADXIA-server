@@ -39,7 +39,7 @@ export class CreateOrderController {
 
       const reqData = {
         clientId: req.body.clientId,
-        productIds: req.body.products,
+        products: req.body.products,
         employeeToken: employeeTokenOrError.getValue()
       } as CreateOrderDTO;
 

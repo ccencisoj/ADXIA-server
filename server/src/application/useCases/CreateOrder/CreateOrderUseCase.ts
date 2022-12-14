@@ -13,12 +13,16 @@ import {
   EmployeeType, 
   Order, 
   OrderProduct, 
+  Product, 
   ProductBrand, 
   ProductName, 
   ProductPrice, 
   ProductQuantity, 
+  Result, 
   UniqueEntityId 
 } from "../../../domain";
+import { ValidationException } from "../../exceptions/ValidationException";
+import { ProductException } from "../../exceptions/ProductException";
 
 type Response = Promise<Order>;
 
@@ -69,24 +73,25 @@ export class CreateOrderUseCase {
 
     let total = 0;
 
-    for(let productId of req.productIds) {
-      const product = await this.productRepository.findOne({id: productId});
+    for(let reqProduct of req.products) {
+      const product = await this.productRepository.findOne({id: reqProduct.productId});
       const productFound = !!product;
 
       if(productFound) {
         const nameOrError = ProductName.create(product.name);
         const brandOrError = ProductBrand.create(product.brand);
-        const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity);
+        const quantityOrError = ProductQuantity.create(reqProduct.quantity);
         const priceOrError = ProductPrice.create(product.price);
         const orderProductOrError = OrderProduct.create({
           orderId: orderId,
+          productId: product.id,
           name: nameOrError.getValue(),
           brand: brandOrError.getValue(),
-          avaliableQuantity: avaliableQuantityOrError.getValue(),
+          quantity: quantityOrError.getValue(),
           price: priceOrError.getValue(),
           imageURL: product.imageURL,
           description: product.description,
-          grammage: product.grammage
+          grammage: product.grammage  
         });
 
         if(orderProductOrError.isFailure) {
@@ -97,7 +102,7 @@ export class CreateOrderUseCase {
 
         await this.orderProductRepository.save(orderProduct);
 
-        total += orderProduct.price;
+        total += (orderProduct.price * reqProduct.quantity);
       }
     }
 
@@ -116,6 +121,46 @@ export class CreateOrderUseCase {
     const order = orderOrError.getValue();
 
     await this.orderRepository.save(order);
+
+    for(let reqProduct of req.products) {
+      const product = await this.productRepository.findOne({id: reqProduct.productId});
+      const productFound = !!product;
+
+      if(productFound) {
+        const nameOrError = ProductName.create(product.name);
+        const brandOrError = ProductBrand.create(product.brand);
+        const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity - reqProduct.quantity);
+        const priceOrError = ProductPrice.create(product.price);
+        const combinedResult = Result.combine([
+          nameOrError,
+          brandOrError,
+          avaliableQuantityOrError,
+          priceOrError
+        ]);
+
+        if(combinedResult.isFailure) {
+          throw new ValidationException(combinedResult.getError() as string);
+        }
+
+        const updatedProductOrError = Product.create({
+          name: nameOrError.getValue(),
+          brand: brandOrError.getValue(),
+          avaliableQuantity: avaliableQuantityOrError.getValue(),
+          price: priceOrError.getValue(),
+          imageURL: product.imageURL,
+          description: product.description,
+          grammage: product.grammage
+        }, product.id);
+    
+        if(updatedProductOrError.isFailure) {
+          throw new ProductException(updatedProductOrError.getError() as string);
+        }
+    
+        const updatedProduct = updatedProductOrError.getValue();
+    
+        await this.productRepository.save(updatedProduct);        
+      }
+    }
 
     return order;
   }

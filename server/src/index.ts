@@ -30,7 +30,10 @@ import {
   getOrderProductsController,
   loginEmployeeController,
   logoutEmployeeController,
-  getCurrentEmployeeController
+  getCurrentEmployeeController,
+  getProductByIdController,
+  getOrdersClientsController,
+  getOrderByIdController
 } from './container';
 
 const PORT = config.PORT;
@@ -58,10 +61,12 @@ const SESSION_SECRET = config.SESSION_SECRET;
 
   // Order Routes
   apiRouter.get(getOrdersController.route, getOrdersController.execute);
+  apiRouter.get(getOrderByIdController.route, getOrderByIdController.execute);
   apiRouter.post(createOrderController.route, createOrderController.execute);
   apiRouter.delete(deleteOrderController.route, deleteOrderController.execute);
   apiRouter.put(updateOrderController.route, updateOrderController.execute);
   apiRouter.get(getOrderProductsController.route, getOrderProductsController.execute);
+  apiRouter.get(getOrdersClientsController.route, getOrdersClientsController.execute);
 
   // Employee Routes
   apiRouter.get(getEmployeeByIdController.route, getEmployeeByIdController.execute);
@@ -82,6 +87,7 @@ const SESSION_SECRET = config.SESSION_SECRET;
 
   // Product Routes
   apiRouter.get(getProductsController.route, getProductsController.execute);
+  apiRouter.get(getProductByIdController.route, getProductByIdController.execute);
   apiRouter.post(createProductController.route, createProductController.execute);
   apiRouter.delete(deleteProductController.route, deleteProductController.execute);
   apiRouter.put(updateProductController.route, updateProductController.execute);

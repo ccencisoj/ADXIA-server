@@ -11,13 +11,13 @@ export class EmployeeRepository implements IEmployeeRepository {
   }
 
   public findOne = async (filter: any): Promise<Employee> => {
-    const repoEmployee = await this.model.findOne(filter);    
+    const repoEmployee = await this.model.findOne({...filter, deleted: false});    
     const employee = repoEmployee ? EmployeeMapper.toDomain(repoEmployee) : null;
     return employee;
   }
 
   public findMany = async (filter: any, skip: number, limit: number): Promise<Employee[]> => {
-    const repoEmployees = await this.model.find(filter).sort({"$natural": -1}).skip(skip).limit(limit);
+    const repoEmployees = await this.model.find({...filter, deleted: false}).sort({"$natural": -1}).skip(skip).limit(limit);
     const employees = repoEmployees.map((repoEmployee)=> EmployeeMapper.toDomain(repoEmployee));
     return employees;
   }
@@ -29,12 +29,16 @@ export class EmployeeRepository implements IEmployeeRepository {
     if(exists) {
       await this.model.updateOne({id: repoEmployee.id}, repoEmployee);
     }else {
-      await this.model.create(repoEmployee);
+      await this.model.create({...repoEmployee, deleted: false});
     }
   }
 
   public delete = async (employee: Employee): Promise<void> => {
-    await this.model.deleteOne({id: employee.id}); 
+    await this.model.updateOne({id: employee.id}, {deleted: true}); 
+  }
+  
+  public deleteMany = async (filter: any): Promise<void> => {
+    await this.model.updateMany(filter, {deleted: true});
   }
 
   public existsById = async (entityId: string): Promise<boolean> => {

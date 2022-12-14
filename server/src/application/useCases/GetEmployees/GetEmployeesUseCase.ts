@@ -37,7 +37,23 @@ export class GetEmployeesUseCase {
       throw new EmployeeActionNoAllowedException();
     }
 
-    const employees = await this.employeeRepository.findMany({}, req.skip, req.limit);
+    let employees;
+
+    if(req.searchValue) {
+      employees = await this.employeeRepository.findMany({
+        $or: [
+          {name: {$regex: `.*${req.searchValue}.*`, $options: "i"}}, 
+          {surname: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {email: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {nroDocument: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {type: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {phone: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+        ]
+      }, req.skip, req.limit);
+
+    }else {
+      employees = await this.employeeRepository.findMany({}, req.skip, req.limit);
+    }
 
     return employees;
   }

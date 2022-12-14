@@ -15,10 +15,11 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb)=> {
     const originalname = file.originalname;
-    const extensionName = originalname.split(".").pop();
+    const extensionName = String(originalname.split(".").pop()).toLowerCase();
 
     if(!(extensionName === "png" ||
       extensionName === "jpeg" ||
+      extensionName === "jpg" ||
       extensionName === "svg")) {
       return cb(new ExtensionNoValidException(extensionName), "");
     }

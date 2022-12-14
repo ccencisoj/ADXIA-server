@@ -1,30 +1,30 @@
 import { HttpRequest } from "../http/HttpRequest";
 import { HttpReponse } from "../http/HttpResponse";
-import { OrderMapper } from "../mappers/OrderMapper";
+import { ProductMapper } from "../mappers/ProductMapper";
 import { getEmployeeToken } from "../helpers/getEmployeeToken";
 import { EmployeeTokenException } from "../exceptions/EmployeeTokenException";
 import { ControllerErrorHandler } from "../errorHandlers/ControllerErrorHandler";
 import {
-  GetOrdersDTO, 
-  GetOrdersUseCase
+  GetProductByIdDTO, 
+  GetProductByIdUseCase
 } from "../../application";
 
-interface GetOrdersControllerDeps {
-  getOrdersUseCase: GetOrdersUseCase;
+interface GetProductByIdControllerDeps {
+  getProductByIdUseCase: GetProductByIdUseCase;
   controllerErrorHandler: ControllerErrorHandler;
 }
 
-export class GetOrdersController {
-  public readonly route = "/orders";
+export class GetProductByIdController {
+  public readonly route = "/product";
 
-  protected readonly getOrdersUseCase: GetOrdersUseCase;
+  protected readonly getProductByIdUseCase: GetProductByIdUseCase;
   protected readonly controllerErrorHandler: ControllerErrorHandler;
 
   public constructor({
-    getOrdersUseCase,
+    getProductByIdUseCase,
     controllerErrorHandler
-  }: GetOrdersControllerDeps) {
-    this.getOrdersUseCase = getOrdersUseCase;
+  }: GetProductByIdControllerDeps) {
+    this.getProductByIdUseCase = getProductByIdUseCase;
     this.controllerErrorHandler = controllerErrorHandler;
   }
 
@@ -37,17 +37,15 @@ export class GetOrdersController {
       }
 
       const reqData = {
-        skip: Number(req.query.skip),
-        limit: Number(req.query.limit),
-        searchValue: req.query.search,
+        productId: req.query.productId,
         employeeToken: employeeTokenOrError.getValue()
-      } as GetOrdersDTO;
+      } as GetProductByIdDTO;
 
-      const orders = await this.getOrdersUseCase.execute(reqData);
-      
-      const ordersJSON = orders.map((order)=> OrderMapper.toJSON(order));
+      const product = await this.getProductByIdUseCase.execute(reqData);
 
-      res.json({orders: ordersJSON});
+      const productJSON = ProductMapper.toJSON(product);
+
+      res.json({product: productJSON});
 
     }catch(error) {
       this.controllerErrorHandler.execute(req, res, error);

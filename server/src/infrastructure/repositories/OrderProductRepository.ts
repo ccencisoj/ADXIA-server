@@ -11,13 +11,13 @@ export class OrderProductRepository implements IOrderProductRepository {
   }
 
   public findOne = async (filter: any): Promise<OrderProduct> => {
-    const repoOrderProduct = await this.model.findOne(filter);    
+    const repoOrderProduct = await this.model.findOne({...filter, deleted: false});    
     const orderProduct = repoOrderProduct ? OrderProductMapper.toDomain(repoOrderProduct) : null;
     return orderProduct;
   }
 
-  public findMany = async (filter: any, skip: number, limit: number): Promise<OrderProduct[]> => {
-    const repoOrderProducts = await this.model.find(filter).sort({"$natural": -1}).skip(skip).limit(limit);
+  public findMany = async (filter: any, skip?: number, limit?: number): Promise<OrderProduct[]> => {
+    const repoOrderProducts = await this.model.find({...filter, deleted: false}).sort({"$natural": -1}).skip(skip).limit(limit);
     const orderProducts = repoOrderProducts.map((repoOrderProduct)=> OrderProductMapper.toDomain(repoOrderProduct));
     return orderProducts;
   }
@@ -29,16 +29,16 @@ export class OrderProductRepository implements IOrderProductRepository {
     if(exists) {
       await this.model.updateOne({id: repoOrderProduct.id}, repoOrderProduct);
     }else {
-      await this.model.create(repoOrderProduct);
+      await this.model.create({...repoOrderProduct, deleted: false});
     }
   }
 
   public delete = async (OrderProduct: OrderProduct): Promise<void> => {
-    await this.model.deleteOne({id: OrderProduct.id}); 
+    await this.model.updateOne({id: OrderProduct.id}, {deleted: true}); 
   }
 
   public deleteMany = async (filter: any): Promise<void> => {
-    await this.model.deleteMany(filter);
+    await this.model.updateMany(filter, {deleted: true});
   }
 
   public existsById = async (entityId: string): Promise<boolean> => {
