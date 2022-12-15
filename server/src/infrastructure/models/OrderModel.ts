@@ -6,6 +6,7 @@ const OrderSchema = new Schema({
   employeeId: {type: String, required: true},
   createdAt: {type: String, required: true},
   deliveredAt: {type: String, required: false},
+  deliveryState: {type: String, required: true},
   total: {type: Number, required: true},
   deleted: {type: Boolean, required: true}
 });

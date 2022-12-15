@@ -40,6 +40,7 @@ export class GetOrdersController {
         skip: Number(req.query.skip),
         limit: Number(req.query.limit),
         searchValue: req.query.search,
+        deliveryState: req.query.deliveryState,
         employeeToken: employeeTokenOrError.getValue()
       } as GetOrdersDTO;
 

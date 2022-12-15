@@ -43,14 +43,18 @@ export class GetProductsUseCase {
     
     if(req.searchValue) {
       products = await this.productRepository.findMany({
+        avaliableQuantity: {$gte: 1},
         $or: [
           {name: {$regex: `.*${req.searchValue}.*`, $options: "i"}}, 
           {brand: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
+          {grammage: Number(req.searchValue) ? Number(req.searchValue) : 0}
         ]
       }, req.skip, req.limit);
 
     }else {
-      products = await this.productRepository.findMany({}, req.skip, req.limit);
+      products = await this.productRepository.findMany({
+        avaliableQuantity: {$gte: 1}
+      }, req.skip, req.limit);
     }
 
     return products;

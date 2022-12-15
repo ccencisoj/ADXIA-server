@@ -2,12 +2,14 @@ import { DateTime } from "./DateTime";
 import { Result } from "./common/Result";
 import { AggregateRoot } from "./common/AggregateRoot";
 import { CreatedOrderEvent } from "./events/CreatedOrderEvent";
+import { DeliveryState } from "./DeliveryState";
 
 interface OrderProps {
   clientId?: string,
   employeeId: string;
   total: number;
   createdAt: DateTime;
+  deliveryState: DeliveryState,
   deliveredAt?: DateTime;
 }
 
@@ -30,6 +32,10 @@ export class Order extends AggregateRoot<OrderProps> {
 
   public get deliveredAt(): DateTime {
     return this.props.deliveredAt;
+  }
+
+  public get deliveryState(): string {
+    return this.props.deliveryState.value;
   }
 
   public get total(): number {

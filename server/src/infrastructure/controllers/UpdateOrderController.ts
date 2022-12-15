@@ -36,6 +36,7 @@ export class UpdateOrderController {
         orderId: req.query.orderId,
         clientId: req.body.clientId,
         products: req.body.products,
+        deliveryState: req.body.deliveryState,
         employeeToken: employeeTokenOrError.getValue()
       } as UpdateOrderDTO;
 

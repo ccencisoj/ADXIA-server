@@ -1,7 +1,7 @@
 export interface UpdateOrderDTO {
   orderId: string;
   clientId: string;
-  deliveryAt: string;
+  deliveryState: string;
   employeeToken: string;
   products: ({productId: string, quantity: number})[],
 }

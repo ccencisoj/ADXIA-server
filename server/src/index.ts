@@ -37,8 +37,11 @@ import {
 } from './container';
 
 const PORT = config.PORT;
+const NODE_ENV = config.NODE_ENV;
 const MONGO_URI = config.MONGO_URI;
 const SESSION_SECRET = config.SESSION_SECRET;
+
+const isProduction = NODE_ENV === "production";
 
 (async ()=> {
   const server = express();
@@ -48,7 +51,17 @@ const SESSION_SECRET = config.SESSION_SECRET;
   // Middlewares
   server.use(cors({
     credentials: true,
-    origin: ["http://localhost:3000"]
+    origin: isProduction ? [
+      "http://adxia.online",
+      "https://adxia.online",
+      "http://www.adxia.online",
+      "https://www.adxia.online"
+    ] 
+    :
+    [
+      "http://localhost:3000",
+      "http://192.168.100.6:3000",
+    ] 
   }));
 
   server.use(express.json());

@@ -5,6 +5,8 @@ import { IEmployeeTokenService } from "../../services/IEmployeeTokenService";
 import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
 import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
 import { IClientRepository } from "../../repositories/IClientRepository";
+import { DeliveryState } from "../../../domain/DeliveryState";
+import { ValidationException } from "../../exceptions/ValidationException";
 
 type Response = Promise<Order[]>;
 
@@ -38,15 +40,27 @@ export class GetOrdersUseCase {
 
     const decodedEmployee = decodedEmployeeOrError.getValue();
 
-    console.log(decodedEmployee);
-
     if(!(decodedEmployee.type === EmployeeType.ADMIN || 
       decodedEmployee.type === EmployeeType.VENDOR ||
       decodedEmployee.type === EmployeeType.DELIVERER)) {
       throw new EmployeeActionNoAllowedException();
     }
 
-    let orders;
+    let deliveryState = null;
+
+    if(req.deliveryState) {
+      const deliveryStateOrError = DeliveryState.create(req.deliveryState);
+    
+      if(deliveryStateOrError.isFailure) {
+        throw new ValidationException(deliveryStateOrError.getError() as string);
+      }    
+
+      deliveryState = deliveryStateOrError.getValue().value;
+    }
+
+    const isVendor = decodedEmployee.type === EmployeeType.VENDOR;
+
+    let orders: any = [];
 
     if(req.searchValue) {
       const clients = await this.clientRepository.findMany({
@@ -56,21 +70,34 @@ export class GetOrdersUseCase {
           {nroDocument: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
           {phoneNumber: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
           {address: {$regex: `.*${req.searchValue}.*`, $options: "i"}},
-          {business: {$regex: `.*${req.searchValue}.*`, $options: "i"}}
-        ]
+          {business: {$regex: `.*${req.searchValue}.*`, $options: "i"}} 
+        ],
       }, req.skip, req.limit);
 
-      orders = [];
-
       for(let client of clients) {
-        const order = await this.orderRepository.findOne({clientId: client.id});
-        const orderFound = !!order;
-        if(orderFound) orders.push(order);
+        const repoOrders = await this.orderRepository.findMany({
+            $and: [
+              {clientId: client.id},
+              deliveryState ? {deliveryState} : {},
+              isVendor ? {employeeId: decodedEmployee.id} : {}
+            ]
+        })
+        orders = [...orders, ...repoOrders];
       }
+
     }else {
-      orders = await this.orderRepository.findMany({}, req.skip, req.limit);
+      orders = await this.orderRepository.findMany({
+        $and: [
+          deliveryState ? {deliveryState} : {},
+          isVendor ? {employeeId: decodedEmployee.id} : {}
+        ]
+      }, req.skip, req.limit);
     }
 
     return orders;
   }
 }
+
+
+
+

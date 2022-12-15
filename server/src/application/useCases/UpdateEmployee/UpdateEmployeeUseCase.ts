@@ -84,7 +84,6 @@ export class UpdateEmployeeUseCase {
 
     const imageURL = req.imageURL || employee.imageURL;
     const type = req.type || employee.type;
-    const accessCode = req.accessCode ? this.hashService.hash(req.accessCode) : req.accessCode;
     const phone = req.phone || employee.phone;
 
     const updatedEmployeeOrError = Employee.create({
@@ -95,7 +94,7 @@ export class UpdateEmployeeUseCase {
       birthDate: birthDateOrError.getValue(),
       imageURL: imageURL,
       type: typeOrError.getValue(),
-      accessCode: accessCode,
+      accessCode: employee.accessCode,
       phone: phone
     }, employee.id);
 

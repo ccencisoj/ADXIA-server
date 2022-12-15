@@ -35,7 +35,7 @@ export class GetClientByIdUseCase {
     const decodedEmployee = decodedEmployeeOrError.getValue();
 
     if(!(decodedEmployee.type === EmployeeType.ADMIN ||
-      decodedEmployee.type === EmployeeType.ADMIN ||
+      decodedEmployee.type === EmployeeType.VENDOR ||
       decodedEmployee.type === EmployeeType.DELIVERER)) {
       throw new EmployeeActionNoAllowedException();
     }

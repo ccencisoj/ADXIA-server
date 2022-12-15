@@ -20,7 +20,11 @@ export class DateTime extends ValueObject<DateTimeProps> {
     return Result.ok<DateTime>(dateTime);
   }
 
-  public static current = (): string => {
-    return Date.now().toString();
+  public static current = (): string => { 
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    return `${year}-${month}-${day}`;
   }
 }

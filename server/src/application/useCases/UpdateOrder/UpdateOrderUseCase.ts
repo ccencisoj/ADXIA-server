@@ -7,10 +7,11 @@ import { OrderProductException } from "../../exceptions/OrderProductException";
 import { IOrderProductRepository } from "../../repositories/IOrderProductRepository";
 import { EmployeeCredentialsException } from "../../exceptions/EmployeeCredentialsException";
 import { EmployeeActionNoAllowedException } from "../../exceptions/EmployeeActionNoAllowedException";
-import { EmployeeType, Order, OrderProduct, Product, ProductBrand, ProductName, ProductPrice, ProductQuantity, Result } from "../../../domain";
+import { DateTime, EmployeeType, Order, OrderProduct, Product, ProductBrand, ProductName, ProductPrice, ProductQuantity, Result } from "../../../domain";
 import { OrderException } from "../../exceptions/OrderException";
 import { ValidationException } from "../../exceptions/ValidationException";
 import { ProductException } from "../../exceptions/ProductException";
+import { DeliveryState } from "../../../domain/DeliveryState";
 
 type Response = Promise<void>;
 
@@ -49,7 +50,8 @@ export class UpdateOrderUseCase {
     const decodedEmployee = decodedEmployeeOrError.getValue();
 
     if(!(decodedEmployee.type === EmployeeType.ADMIN ||
-      decodedEmployee.type === EmployeeType.VENDOR)) {
+      decodedEmployee.type === EmployeeType.VENDOR ||
+      decodedEmployee.type === EmployeeType.DELIVERER)) {
       throw new EmployeeActionNoAllowedException();
     }
 
@@ -60,90 +62,124 @@ export class UpdateOrderUseCase {
       throw new OrderNoFoundException();
     }
 
-    const orderProducts = await this.orderProductRepository.findMany({orderId: order.id});
+    let total = order.total;
 
-    for(let orderProduct of orderProducts) {
-      const product = await this.productRepository.findOne({id: orderProduct.productId});
-      const productFound = !!product;
+    if(req.products && 
+      ((decodedEmployee.type === EmployeeType.ADMIN) || 
+      (decodedEmployee.type === EmployeeType.VENDOR))) {
 
-      if(productFound) {
-        const nameOrError = ProductName.create(product.name);
-        const brandOrError = ProductBrand.create(product.brand);
-        const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity + orderProduct.quantity);
-        const priceOrError = ProductPrice.create(product.price);
-        const combinedResult = Result.combine([
-          nameOrError,
-          brandOrError,
-          avaliableQuantityOrError,
-          priceOrError
-        ]);
-
-        if(combinedResult.isFailure) {
-          throw new ValidationException(combinedResult.getError() as string);
+      const orderProducts = await this.orderProductRepository.findMany({orderId: order.id});
+  
+      for(let orderProduct of orderProducts) {
+        const product = await this.productRepository.findOne({id: orderProduct.productId});
+        const productFound = !!product;
+  
+        if(productFound) {
+          const nameOrError = ProductName.create(product.name);
+          const brandOrError = ProductBrand.create(product.brand);
+          const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity + orderProduct.quantity);
+          const priceOrError = ProductPrice.create(product.price);
+          const combinedResult = Result.combine([
+            nameOrError,
+            brandOrError,
+            avaliableQuantityOrError,
+            priceOrError
+          ]);
+  
+          if(combinedResult.isFailure) {
+            throw new ValidationException(combinedResult.getError() as string);
+          }
+  
+          const updatedProductOrError = Product.create({
+            name: nameOrError.getValue(),
+            brand: brandOrError.getValue(),
+            avaliableQuantity: avaliableQuantityOrError.getValue(),
+            price: priceOrError.getValue(),
+            imageURL: product.imageURL,
+            description: product.description,
+            grammage: product.grammage
+          }, product.id);
+      
+          if(updatedProductOrError.isFailure) {
+            throw new ProductException(updatedProductOrError.getError() as string);
+          }
+      
+          const updatedProduct = updatedProductOrError.getValue();
+      
+          await this.orderProductRepository.delete(orderProduct);
+          
+          await this.productRepository.save(updatedProduct);
         }
-
-        const updatedProductOrError = Product.create({
-          name: nameOrError.getValue(),
-          brand: brandOrError.getValue(),
-          avaliableQuantity: avaliableQuantityOrError.getValue(),
-          price: priceOrError.getValue(),
-          imageURL: product.imageURL,
-          description: product.description,
-          grammage: product.grammage
-        }, product.id);
-    
-        if(updatedProductOrError.isFailure) {
-          throw new ProductException(updatedProductOrError.getError() as string);
+      }
+  
+      total = 0;
+  
+      for(let reqProduct of req.products) {
+        const product = await this.productRepository.findOne({id: reqProduct.productId});
+        const productFound = !!product;
+  
+        if(productFound && (product.avaliableQuantity - reqProduct.quantity) >= 0) {
+          const nameOrError = ProductName.create(product.name);
+          const brandOrError = ProductBrand.create(product.brand);
+          const quantityOrError = ProductQuantity.create(reqProduct.quantity);
+          const priceOrError = ProductPrice.create(product.price);
+          const orderProductOrError = OrderProduct.create({
+            orderId: order.id,
+            productId: product.id,
+            name: nameOrError.getValue(),
+            brand: brandOrError.getValue(),
+            quantity: quantityOrError.getValue(),
+            price: priceOrError.getValue(),
+            imageURL: product.imageURL,
+            description: product.description,
+            grammage: product.grammage
+          });
+  
+          if(orderProductOrError.isFailure) {
+            throw new OrderProductException(orderProductOrError.getError() as string);
+          }
+  
+          const orderProduct = orderProductOrError.getValue();
+  
+          await this.orderProductRepository.save(orderProduct);
+  
+          total += (orderProduct.price * reqProduct.quantity);
         }
-    
-        const updatedProduct = updatedProductOrError.getValue();
-    
-        await this.orderProductRepository.delete(orderProduct);
-        
-        await this.productRepository.save(updatedProduct);
       }
     }
 
-    let total = 0;
+    let deliveryState = DeliveryState.create(order.deliveryState).getValue();
+    let deliveredAt = order.deliveredAt;
 
-    for(let reqProduct of req.products) {
-      const product = await this.productRepository.findOne({id: reqProduct.productId});
-      const productFound = !!product;
+    if(req.deliveryState && 
+      ((decodedEmployee.type === EmployeeType.ADMIN) || 
+      (decodedEmployee.type === EmployeeType.DELIVERER))
+      ) {
+      
+      const deliveryStateOrError = DeliveryState.create(req.deliveryState || order.deliveryState);
+      const deliveredAtOrError = DateTime.create(
+        req.deliveryState === DeliveryState.DELIVERED ? DateTime.current() : ""
+      );
 
-      if(productFound && (product.avaliableQuantity - reqProduct.quantity) >= 0) {
-        const nameOrError = ProductName.create(product.name);
-        const brandOrError = ProductBrand.create(product.brand);
-        const quantityOrError = ProductQuantity.create(reqProduct.quantity);
-        const priceOrError = ProductPrice.create(product.price);
-        const orderProductOrError = OrderProduct.create({
-          orderId: order.id,
-          productId: product.id,
-          name: nameOrError.getValue(),
-          brand: brandOrError.getValue(),
-          quantity: quantityOrError.getValue(),
-          price: priceOrError.getValue(),
-          imageURL: product.imageURL,
-          description: product.description,
-          grammage: product.grammage
-        });
+      const combinedResult = Result.combine([
+        deliveredAtOrError,
+        deliveredAtOrError
+      ]);
 
-        if(orderProductOrError.isFailure) {
-          throw new OrderProductException(orderProductOrError.getError() as string);
-        }
-
-        const orderProduct = orderProductOrError.getValue();
-
-        await this.orderProductRepository.save(orderProduct);
-
-        total += (orderProduct.price * reqProduct.quantity);
+      if(combinedResult.isFailure) {
+        throw new ValidationException(combinedResult.getError() as string);
       }
+
+      deliveryState = deliveryStateOrError.getValue();
+      deliveredAt = deliveredAtOrError.getValue();
     }
 
     const updatedOrderOrError = Order.create({
       createdAt: order.createdAt,
       employeeId: order.employeeId,
       clientId: req.clientId,
-      deliveredAt: order.deliveredAt,
+      deliveredAt: deliveredAt,
+      deliveryState: deliveryState,
       total: total
     }, order.id);
 
@@ -155,43 +191,47 @@ export class UpdateOrderUseCase {
 
     await this.orderRepository.save(updatedOrder);
 
-    for(let reqProduct of req.products) {
-      const product = await this.productRepository.findOne({id: reqProduct.productId});
-      const productFound = !!product;
-
-      if(productFound) {
-        const nameOrError = ProductName.create(product.name);
-        const brandOrError = ProductBrand.create(product.brand);
-        const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity - reqProduct.quantity);
-        const priceOrError = ProductPrice.create(product.price);
-        const combinedResult = Result.combine([
-          nameOrError,
-          brandOrError,
-          avaliableQuantityOrError,
-          priceOrError
-        ]);
-
-        if(combinedResult.isFailure) {
-          throw new ValidationException(combinedResult.getError() as string);
+    if(req.products && 
+      (decodedEmployee.type === EmployeeType.ADMIN) || 
+      (decodedEmployee.type === EmployeeType.VENDOR)) {
+      for(let reqProduct of req.products) {
+        const product = await this.productRepository.findOne({id: reqProduct.productId});
+        const productFound = !!product;
+  
+        if(productFound) {
+          const nameOrError = ProductName.create(product.name);
+          const brandOrError = ProductBrand.create(product.brand);
+          const avaliableQuantityOrError = ProductQuantity.create(product.avaliableQuantity - reqProduct.quantity);
+          const priceOrError = ProductPrice.create(product.price);
+          const combinedResult = Result.combine([
+            nameOrError,
+            brandOrError,
+            avaliableQuantityOrError,
+            priceOrError
+          ]);
+  
+          if(combinedResult.isFailure) {
+            throw new ValidationException(combinedResult.getError() as string);
+          }
+  
+          const updatedProductOrError = Product.create({
+            name: nameOrError.getValue(),
+            brand: brandOrError.getValue(),
+            avaliableQuantity: avaliableQuantityOrError.getValue(),
+            price: priceOrError.getValue(),
+            imageURL: product.imageURL,
+            description: product.description,
+            grammage: product.grammage
+          }, product.id);
+      
+          if(updatedProductOrError.isFailure) {
+            throw new ProductException(updatedProductOrError.getError() as string);
+          }
+      
+          const updatedProduct = updatedProductOrError.getValue();
+      
+          await this.productRepository.save(updatedProduct);        
         }
-
-        const updatedProductOrError = Product.create({
-          name: nameOrError.getValue(),
-          brand: brandOrError.getValue(),
-          avaliableQuantity: avaliableQuantityOrError.getValue(),
-          price: priceOrError.getValue(),
-          imageURL: product.imageURL,
-          description: product.description,
-          grammage: product.grammage
-        }, product.id);
-    
-        if(updatedProductOrError.isFailure) {
-          throw new ProductException(updatedProductOrError.getError() as string);
-        }
-    
-        const updatedProduct = updatedProductOrError.getValue();
-    
-        await this.productRepository.save(updatedProduct);        
       }
     }
   }

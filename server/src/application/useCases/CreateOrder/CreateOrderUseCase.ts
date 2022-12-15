@@ -23,6 +23,7 @@ import {
 } from "../../../domain";
 import { ValidationException } from "../../exceptions/ValidationException";
 import { ProductException } from "../../exceptions/ProductException";
+import { DeliveryState } from "../../../domain/DeliveryState";
 
 type Response = Promise<Order>;
 
@@ -107,10 +108,12 @@ export class CreateOrderUseCase {
     }
 
     const createdAtOrError = DateTime.create(DateTime.current());
+    const deliveryState = DeliveryState.create(DeliveryState.NO_DELIVERED);
     const orderOrError = Order.create({
       employeeId: decodedEmployee.id,
       clientId: req.clientId,
       createdAt: createdAtOrError.getValue(),
+      deliveryState: deliveryState.getValue(),
       total: total
     }, orderId);
 

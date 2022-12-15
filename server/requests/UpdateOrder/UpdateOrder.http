@@ -1,9 +1,6 @@
-PUT http://localhost:4000/api/order?orderId=9a4551c2-38a8-4ae5-92ad-244a9c17a6a5
+PUT http://localhost:4000/api/order?orderId=5a0c3c56-fb49-4312-8744-230d7d6fe26d
 Content-Type: application/json
 
 {
-  "clientId": "6b79b4c4-3c36-4f7a-b4ed-6dd7222c2470",
-  "products": [
-    "9b116e59-f1ea-4695-b6b5-d318e31c3d93"
-  ]
+  "deliveryState": "NO_DELIVERED"
 }
